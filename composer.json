@@ -2,7 +2,7 @@
   "name": "magesentinel/module-monitor",
   "description": "Store health page, 15-minute health emails, weekly summary and a real-browser test purchase for Magento 2. Optional connector for MageSentinel checkout monitoring.",
   "type": "magento2-module",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "license": "MIT",
   "keywords": [
     "magento2",

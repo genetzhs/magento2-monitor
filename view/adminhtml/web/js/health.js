@@ -170,9 +170,9 @@ define([], function () {
         li.title = n ? (L[n] || n) : '';
         var ms = p.durations && typeof p.durations[i] === 'number' && st !== 'running' ? p.durations[i] : took[i];
         if (ms) took[i] = ms;
-        // The running step counts up between polls, as in MageSentinel's Active checks.
-        if (st === 'running' && begun[i]) ms = now - begun[i];
-        li.children[2].textContent = ms ? secs(ms) : '';
+        // The running step shows no clock: progress reaches us late (one report can cover two
+        // steps), so counting up here showed 99 s for a step that took 3.7 s.
+        li.children[2].textContent = st === 'running' ? '…' : ms ? secs(ms) : '';
       });
       split(p, total, names);
     }
@@ -187,7 +187,6 @@ define([], function () {
         var st = li.className.replace(/.*ms-f-/, '');
         var old = li.querySelector('.ms-flow-slowest'); if (old) old.remove();
         if ((st === 'passed' || st === 'failed') && took[i]) { timed.push({ i: i, ms: took[i], failed: st === 'failed' }); sum += took[i]; }
-        else if (st === 'running' && begun[i]) { var run = Math.max(1, Date.now() - begun[i]); timed.push({ i: i, ms: run, running: true }); sum += run; }
       });
       if (!splitBox) return;
       if (!timed.length) { splitBox.hidden = true; return; }

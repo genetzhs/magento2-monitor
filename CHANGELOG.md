@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.3 – 2026-10-16
+
+- **Test purchase:** the step that is running shows no clock any more. Progress can arrive late, and the counter
+  could read 99 s for a step that then finished in 3.7 s. Each step shows its real time once it is done.
+
 ## 2.0.2 – 2026-10-15
 
 - **Dark colours** on Store health, like the WordPress plugin. A switch in the header picks Match my system (the
