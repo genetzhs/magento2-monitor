@@ -1,0 +1,9 @@
+/* MageSentinel's coloured mark in place of a font icon in the admin's left menu. */
+.admin__menu #menu-magesentinel-monitor-menu > a::before {
+  content: "";
+  display: block;
+  width: 30px;
+  height: 30px;
+  margin: 0 auto .4rem;
+  background: url("../images/logo.svg") center / contain no-repeat;
+}

@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="magesentinel" translate="label" sortOrder="400">
+            <label>MageSentinel</label>
+        </tab>
+        <section id="magesentinel" translate="label" type="text" sortOrder="10"
+                 showInDefault="1" showInWebsite="0" showInStore="0">
+            <class>separator-top</class>
+            <label>Checkout Monitoring</label>
+            <tab>magesentinel</tab>
+            <resource>MageSentinel_Monitor::config</resource>
+            <group id="alerts" translate="label comment" type="text" sortOrder="5" showInDefault="1">
+                <label>Health emails</label>
+                <comment><![CDATA[Free, no MageSentinel account needed. The checks on <strong>MageSentinel &gt; Store health</strong> run every 15 minutes through Magento's cron and email you when one turns red, and again when it is fixed. Sent through your store's own mail; nothing leaves the server.]]></comment>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1">
+                    <label>Email me when a health check turns red</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Paused while MageSentinel is connected and checking the store, because it sends the alerts then. Resumes on its own if it stops for three hours.</comment>
+                </field>
+                <field id="email" translate="label comment" type="text" sortOrder="20" showInDefault="1">
+                    <label>Send to</label>
+                    <validate>validate-email</validate>
+                    <comment>Empty: the General Contact address (Stores &gt; Configuration &gt; Store Email Addresses).</comment>
+                </field>
+                <field id="weekly" translate="label comment" type="select" sortOrder="30" showInDefault="1">
+                    <label>Weekly summary email</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Every Monday morning: last week's orders, revenue, average order and cancelled or unpaid orders against the week before, with any health check that needs a look.</comment>
+                </field>
+            </group>
+            <group id="monitor" translate="label" type="text" sortOrder="10" showInDefault="1">
+                <label>MageSentinel connector</label>
+                <comment><![CDATA[Optional. Connects this store to a <a href="https://magesentinel.com/?utm_source=magento&amp;utm_medium=module" target="_blank" rel="noopener">MageSentinel</a> account (14 days free, no card): a real browser buys from your store on a schedule and tells you which step broke. Paste the token from your MageSentinel dashboard.]]></comment>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1">
+                    <label>Enable diagnostics endpoint</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Read-only. Exposes store health data to MageSentinel. Disabled by default.</comment>
+                </field>
+                <field id="token" translate="label comment" type="obscure" sortOrder="20" showInDefault="1">
+                    <label>Access token</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <comment>Shared secret. Requests without a matching X-MageSentinel-Token are refused.</comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="allow_cancel" translate="label comment" type="select" sortOrder="30" showInDefault="1">
+                    <label>Let MageSentinel cancel its own test orders</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Off by default. When a check places a real order to prove checkout works, this lets it cancel that order afterwards so your order list does not fill up with synthetic ones. It can only cancel orders placed by MageSentinel, created in the last hour, not yet invoiced and not yet shipped — never a customer's order. Cancels, never deletes.]]></comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+                <field id="allow_captcha_skip" translate="label comment" type="select" sortOrder="40" showInDefault="1">
+                    <label>Let MageSentinel's checks past your CAPTCHA</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Off by default. MageSentinel never solves a CAPTCHA, so a checkout or login that asks for one stops its checks there. Switch this on and requests that carry this store's access token are served without reCAPTCHA or Magento's image CAPTCHA. Every other visitor still gets it.]]></comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

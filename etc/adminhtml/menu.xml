@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="MageSentinel_Monitor::menu" title="MageSentinel" translate="title" module="MageSentinel_Monitor"
+             sortOrder="11" resource="MageSentinel_Monitor::menu"/>
+        <add id="MageSentinel_Monitor::health" title="Store health" translate="title" module="MageSentinel_Monitor"
+             sortOrder="10" parent="MageSentinel_Monitor::menu" action="magesentinel/health/index"
+             resource="MageSentinel_Monitor::health"/>
+        <add id="MageSentinel_Monitor::settings" title="Settings" translate="title" module="MageSentinel_Monitor"
+             sortOrder="20" parent="MageSentinel_Monitor::menu" action="adminhtml/system_config/edit/section/magesentinel"
+             resource="MageSentinel_Monitor::config"/>
+    </menu>
+</config>

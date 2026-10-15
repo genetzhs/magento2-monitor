@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <magesentinel>
+            <alerts>
+                <enabled>1</enabled>
+                <email/>
+                <weekly>0</weekly>
+            </alerts>
+            <monitor>
+                <enabled>0</enabled>
+                <token/>
+                <!-- The only write the module can perform. Off unless asked for. -->
+                <allow_cancel>0</allow_cancel>
+                <!-- Serve MageSentinel's own checks without the CAPTCHA. Off unless asked for. -->
+                <allow_captcha_skip>0</allow_captcha_skip>
+            </monitor>
+        </magesentinel>
+    </default>
+</config>

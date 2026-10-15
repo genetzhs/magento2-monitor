@@ -1,0 +1,253 @@
+"%1 GB free.","%1 GB ελεύθερα."
+"%1 GB free. When it runs out, sessions and orders cannot be saved.","%1 GB ελεύθερα. Όταν τελειώσει ο χώρος, δεν αποθηκεύονται sessions και παραγγελίες."
+"%1 days","%1 μέρες"
+"%1 days ago","πριν από %1 μέρες"
+"%1 enabled: %2","%1 ενεργοί: %2"
+"%1 fatal error reports in var/report.","%1 αναφορές μοιραίου σφάλματος στο var/report."
+"%1 fatal error reports in var/report. Shoppers saw an error page each time.","%1 αναφορές μοιραίου σφάλματος στο var/report. Κάθε φορά ο πελάτης είδε σελίδα σφάλματος."
+"%1 h","%1 ώρες"
+"%1 h ago","πριν από %1 ώρες"
+"%1 indexers need a reindex: %2. Prices, stock or search may be out of date.","%1 indexers θέλουν reindex: %2. Τιμές, απόθεμα ή αναζήτηση μπορεί να μην είναι ενημερωμένα."
+"%1 min","%1 λεπτά"
+"%1 min ago","πριν από %1 λεπτά"
+"%1 of %2 orders in the last 24 hours are stuck waiting for payment. A payment gateway may be failing.","%1 από %2 παραγγελίες του τελευταίου 24ώρου έχουν κολλήσει σε αναμονή πληρωμής. Ίσως αποτυγχάνει κάποιος τρόπος πληρωμής."
+"%1 of %2 orders in the last 24 hours are waiting for payment.","%1 από %2 παραγγελίες του τελευταίου 24ώρου περιμένουν πληρωμή."
+"%1, week before %2","%1, την προηγούμενη εβδομάδα %2"
+"A purchase would stop at: %1","Η αγορά θα σταματούσε στο βήμα: %1"
+"A real browser opens your store, finds a product, adds it to the cart and goes through checkout up to the payment step, the way a shopper does. No order is placed. Free once a month, no account; the result is emailed to %1.","Ένας πραγματικός browser ανοίγει το κατάστημα, βρίσκει ένα προϊόν, το βάζει στο καλάθι και περνάει το checkout μέχρι την πληρωμή, όπως ένας πελάτης. Δεν γίνεται παραγγελία. Δωρεάν μία φορά τον μήνα, χωρίς λογαριασμό· το αποτέλεσμα στέλνεται στο %1."
+"A shopper can buy: every step worked.","Ένας πελάτης μπορεί να αγοράσει: όλα τα βήματα δούλεψαν."
+"A test purchase was just run. Try again in a couple of minutes.","Μόλις έτρεξε μια δοκιμαστική αγορά. Δοκιμάστε ξανά σε δύο λεπτά."
+"Access token","Token πρόσβασης"
+"Add to cart","Προσθήκη στο καλάθι"
+"All caches are on and fresh.","Όλες οι caches είναι ενεργές και ενημερωμένες."
+"All indexers are valid.","Όλοι οι indexers είναι ενημερωμένοι."
+"Average order","Μέση παραγγελία"
+"Back to normal on %1","Όλα καλά ξανά στο %1"
+"Caches enabled and fresh","Caches ενεργές και ενημερωμένες"
+"Cancelled or unpaid","Ακυρωμένες ή απλήρωτες"
+"Cart total","Σύνολο καλαθιού"
+"Change","Αλλαγή"
+"Change the address or switch these emails off under Stores > Configuration > MageSentinel.","Αλλάξτε τη διεύθυνση ή απενεργοποιήστε αυτά τα email στο Stores > Configuration > MageSentinel."
+"Check again","Έλεγχος ξανά"
+"Checked every 15 minutes (last: %1). When a row turns red, an email goes to %2, and another when it is fixed.","Ελέγχεται κάθε 15 λεπτά (τελευταία: %1). Όταν μια γραμμή γίνει κόκκινη, πηγαίνει email στο %2, και άλλο ένα όταν διορθωθεί."
+"Checked just now.","Ελέγχθηκε μόλις τώρα."
+"Checkout","Checkout"
+"Checkout Monitoring","Παρακολούθηση checkout"
+"Connected","Συνδεδεμένο"
+"Could not reach %1 from this server to read the certificate.","Δεν ήταν δυνατή η σύνδεση με το %1 από αυτόν τον server για ανάγνωση του πιστοποιητικού."
+"Could not reach MageSentinel. Try again.","Δεν ήταν δυνατή η επικοινωνία με το MageSentinel. Δοκιμάστε ξανά."
+"Could not read the certificate of %1.","Δεν ήταν δυνατή η ανάγνωση του πιστοποιητικού του %1."
+"Could not read the free space.","Δεν ήταν δυνατή η ανάγνωση του ελεύθερου χώρου."
+"Could not read this on your server.","Δεν ήταν δυνατή η ανάγνωση αυτού στον server σας."
+"Cron has never run. Order emails, indexing and scheduled prices depend on it.","Το cron δεν έχει τρέξει ποτέ. Από αυτό εξαρτώνται τα email παραγγελιών, το indexing και οι προγραμματισμένες τιμές."
+"Cron running","Το cron τρέχει"
+"Customer details","Στοιχεία πελάτη"
+"Database matches the code","Η βάση συμφωνεί με τον κώδικα"
+"Disabled: %1.","Απενεργοποιημένες: %1."
+"Email me when a health check turns red","Email όταν ένας έλεγχος υγείας γίνει κόκκινος"
+"Emails","Email"
+"Empty: the General Contact address (Stores > Configuration > Store Email Addresses).","Κενό: η διεύθυνση General Contact (Stores > Configuration > Store Email Addresses)."
+"Enable diagnostics endpoint","Ενεργοποίηση endpoint διαγνωστικών"
+"Every Monday morning: last week's orders, revenue, average order and cancelled or unpaid orders against the week before, with any health check that needs a look.","Κάθε Δευτέρα πρωί: παραγγελίες, τζίρος, μέση παραγγελία και ακυρωμένες ή απλήρωτες της περασμένης εβδομάδας σε σύγκριση με την προηγούμενη, μαζί με όποιον έλεγχο υγείας θέλει προσοχή."
+"Everything we can read from the inside looks right","Όλα όσα διαβάζουμε από μέσα φαίνονται σωστά"
+"Fatal errors, last 24 hours","Μοιραία σφάλματα, τελευταίο 24ωρο"
+"Find a product","Εύρεση προϊόντος"
+"Fix","Διόρθωση"
+"Free disk space","Ελεύθερος χώρος δίσκου"
+"Free test purchase","Δωρεάν δοκιμαστική αγορά"
+"Full page cache is off, so every visit is built from scratch: %1.","Το full page cache είναι κλειστό, οπότε κάθε επίσκεψη χτίζεται από την αρχή: %1."
+"HTTPS certificate","Πιστοποιητικό HTTPS"
+"HTTPS is not used on the storefront (Use Secure URLs on Storefront is off).","Το κατάστημα δεν χρησιμοποιεί HTTPS (το Use Secure URLs on Storefront είναι κλειστό)."
+"Health emails","Email υγείας"
+"Health emails are off.","Τα email υγείας είναι απενεργοποιημένα."
+"I have a token","Έχω token"
+"Indexers up to date","Indexers ενημερωμένοι"
+"Last check-in %1. MageSentinel buys from your store on a schedule and alerts you by email or Slack when a step breaks.","Τελευταίος έλεγχος %1. Το MageSentinel αγοράζει από το κατάστημά σας προγραμματισμένα και σας ειδοποιεί με email ή Slack όταν χαλάσει κάποιο βήμα."
+"Last cron job finished %1 ago.","Η τελευταία εργασία cron τελείωσε πριν από %1."
+"Last cron job finished %1 ago. Order emails, indexing and scheduled prices wait for it.","Η τελευταία εργασία cron τελείωσε πριν από %1. Email παραγγελιών, indexing και προγραμματισμένες τιμές περιμένουν."
+"Last order %1 ago, longer than usual for this store.","Τελευταία παραγγελία πριν από %1, περισσότερο από το συνηθισμένο για αυτό το κατάστημα."
+"Last order %1 ago.","Τελευταία παραγγελία πριν από %1."
+"Last order %1 ago. This time last week the store had %2 orders a day, so this gap is unusual.","Τελευταία παραγγελία πριν από %1. Την ίδια ώρα την περασμένη εβδομάδα το κατάστημα είχε %2 παραγγελίες τη μέρα, οπότε το κενό είναι ασυνήθιστο."
+"Last week on %1","Η περασμένη εβδομάδα στο %1"
+"Let MageSentinel cancel its own test orders","Το MageSentinel ακυρώνει τις δικές του δοκιμαστικές παραγγελίες"
+"Let MageSentinel's checks past your CAPTCHA","Οι έλεγχοι του MageSentinel περνούν το CAPTCHA"
+"MageSentinel connector","Connector MageSentinel"
+"MageSentinel could not reach this store from the internet to confirm the request.","Το MageSentinel δεν μπόρεσε να φτάσει το κατάστημα από το internet για να επιβεβαιώσει το αίτημα."
+"MageSentinel could not use this store address or email. Check the alert email under Settings.","Το MageSentinel δεν μπόρεσε να χρησιμοποιήσει τη διεύθυνση του καταστήματος ή το email. Ελέγξτε το email ειδοποιήσεων στις Ρυθμίσεις."
+"MageSentinel did not recognise this store. Check the token under Settings.","Το MageSentinel δεν αναγνώρισε το κατάστημα. Ελέγξτε το token στις Ρυθμίσεις."
+"MageSentinel monitoring","Παρακολούθηση MageSentinel"
+"Maintenance mode is off.","Το maintenance mode είναι κλειστό."
+"Maintenance mode is on: shoppers see the maintenance page. Run bin/magento maintenance:disable.","Το maintenance mode είναι ανοιχτό: οι πελάτες βλέπουν τη σελίδα συντήρησης. Τρέξτε bin/magento maintenance:disable."
+"Mode: %1.","Λειτουργία: %1."
+"Need a refresh: %1.","Θέλουν ανανέωση: %1."
+"Needs a look: %1","Θέλει έλεγχο: %1"
+"Needs a reindex: %1.","Θέλει reindex: %1."
+"No orders in the last 24 hours.","Καμία παραγγελία το τελευταίο 24ωρο."
+"No orders yet.","Καμία παραγγελία ακόμα."
+"No payment method is enabled, so no order can be paid.","Δεν υπάρχει ενεργός τρόπος πληρωμής, οπότε καμία παραγγελία δεν μπορεί να πληρωθεί."
+"No shipping method is enabled, so physical products cannot be ordered.","Δεν υπάρχει ενεργός τρόπος αποστολής, οπότε δεν παραγγέλνονται φυσικά προϊόντα."
+"No upgrade waiting.","Καμία αναβάθμιση σε αναμονή."
+"None.","Κανένα."
+"Open dashboard","Άνοιγμα dashboard"
+"Orders","Παραγγελίες"
+"Orders coming in","Έρχονται παραγγελίες"
+"Paused while MageSentinel is connected and checking the store, because it sends the alerts then. Resumes on its own if it stops for three hours.","Σε παύση όσο το MageSentinel είναι συνδεδεμένο και ελέγχει το κατάστημα, γιατί τότε στέλνει εκείνο τις ειδοποιήσεις. Ξαναρχίζει μόνο του αν σταματήσει για τρεις ώρες."
+"Paused while MageSentinel is connected, because it sends your alerts.","Σε παύση όσο το MageSentinel είναι συνδεδεμένο, γιατί στέλνει εκείνο τις ειδοποιήσεις."
+"Payment","Πληρωμή"
+"Payment methods","Τρόποι πληρωμής"
+"Payments completing","Οι πληρωμές ολοκληρώνονται"
+"Product page","Σελίδα προϊόντος"
+"Production mode","Production mode"
+"Read-only. Exposes store health data to MageSentinel. Disabled by default.","Μόνο ανάγνωση. Δίνει στοιχεία υγείας του καταστήματος στο MageSentinel. Απενεργοποιημένο από προεπιλογή."
+"Revenue","Τζίρος"
+"Run bin/magento setup:upgrade. Waiting: %1.","Τρέξτε bin/magento setup:upgrade. Σε αναμονή: %1."
+"Running…","Εκτελείται…"
+"Runs your MageSentinel checkout monitor now and shows each step as it happens.","Τρέχει τώρα τον έλεγχο checkout του MageSentinel και δείχνει κάθε βήμα την ώρα που γίνεται."
+"Search","Αναζήτηση"
+"See the full result","Δείτε το πλήρες αποτέλεσμα"
+"Send to","Αποστολή σε"
+"Set up, not checking in","Ρυθμισμένο, χωρίς έλεγχο"
+"Settings","Ρυθμίσεις"
+"Shared secret. Requests without a matching X-MageSentinel-Token are refused.","Κοινό μυστικό. Αιτήματα χωρίς το ίδιο X-MageSentinel-Token απορρίπτονται."
+"Shipping","Αποστολή"
+"Shipping methods","Τρόποι αποστολής"
+"Sign in","Σύνδεση"
+"Something on %1 needs a look","Κάτι στο %1 θέλει έλεγχο"
+"Start free trial","Δωρεάν δοκιμή"
+"Store health","Υγεία καταστήματος"
+"Store health and test purchase","Υγεία καταστήματος και δοκιμαστική αγορά"
+"Store open to shoppers","Κατάστημα ανοιχτό για πελάτες"
+"Store opens","Το κατάστημα ανοίγει"
+"Switch this summary off under Stores > Configuration > MageSentinel.","Απενεργοποιήστε τη σύνοψη στο Stores > Configuration > MageSentinel."
+"Test again","Δοκιμή ξανά"
+"Test cart & checkout","Δοκιμή καλαθιού & checkout"
+"The MageSentinel health check found a problem that can stop shoppers from buying. Each row says what is wrong.","Ο έλεγχος υγείας του MageSentinel βρήκε πρόβλημα που μπορεί να εμποδίσει τους πελάτες να αγοράσουν. Κάθε γραμμή λέει τι δεν πάει καλά."
+"The certificate of %1 expires in %2 days.","Το πιστοποιητικό του %1 λήγει σε %2 μέρες."
+"The certificate of %1 has expired. Browsers block the store.","Το πιστοποιητικό του %1 έχει λήξει. Οι browsers μπλοκάρουν το κατάστημα."
+"The connector is on, but MageSentinel has not read this store for 3 hours (last: %1). Check the token matches the one in your dashboard and that the monitor is enabled.","Ο connector είναι ενεργός, αλλά το MageSentinel δεν έχει διαβάσει το κατάστημα εδώ και 3 ώρες (τελευταία: %1). Ελέγξτε ότι το token ταιριάζει με αυτό στο dashboard και ότι ο έλεγχος είναι ενεργός."
+"The free checks above read the store from the inside. MageSentinel adds the outside: a real browser buys from your store every 30 minutes and tells you which step broke, with a screenshot. 14 days free, no card.","Οι δωρεάν έλεγχοι εδώ διαβάζουν το κατάστημα από μέσα. Το MageSentinel προσθέτει την εξωτερική ματιά: ένας πραγματικός browser αγοράζει από το κατάστημά σας κάθε 30 λεπτά και σας λέει ποιο βήμα χάλασε, με screenshot. 14 μέρες δωρεάν, χωρίς κάρτα."
+"The last 7 days against the 7 before, from your own orders. Health checks that need a look are listed after the figures.","Οι τελευταίες 7 μέρες σε σύγκριση με τις 7 προηγούμενες, από τις δικές σας παραγγελίες. Οι έλεγχοι υγείας που θέλουν προσοχή ακολουθούν μετά τα νούμερα."
+"The secure base URL is not HTTPS. Browsers warn shoppers on the checkout.","Το secure base URL δεν είναι HTTPS. Οι browsers προειδοποιούν τους πελάτες στο checkout."
+"The store runs in developer mode: slower, and errors are shown to shoppers. Fine on staging, not on a live store.","Το κατάστημα τρέχει σε developer mode: πιο αργό, και τα σφάλματα φαίνονται στους πελάτες. Εντάξει για staging, όχι για live κατάστημα."
+"These checks read your settings and counts from inside Magento. They cannot tell whether a shopper can actually pay; the test purchase below does that.","Αυτοί οι έλεγχοι διαβάζουν ρυθμίσεις και μετρήσεις από μέσα από το Magento. Δεν μπορούν να πουν αν ένας πελάτης όντως πληρώνει· αυτό το κάνει η δοκιμαστική αγορά."
+"These problems from an earlier email are fixed.","Αυτά τα προβλήματα από προηγούμενο email διορθώθηκαν."
+"This month's free test has been used. The next one is on %1.","Η δωρεάν δοκιμή του μήνα χρησιμοποιήθηκε. Η επόμενη είναι στις %1."
+"This month's free test was used. Next one: %1.","Η δωρεάν δοκιμή του μήνα χρησιμοποιήθηκε. Επόμενη: %1."
+"This store has no active checkout monitor in MageSentinel.","Το κατάστημα δεν έχει ενεργό έλεγχο checkout στο MageSentinel."
+"Too many tests right now. Try again later.","Πολλές δοκιμές αυτή τη στιγμή. Δοκιμάστε αργότερα."
+"Valid for %1 more days.","Ισχύει για ακόμα %1 μέρες."
+"Waiting for a free browser…","Αναμονή για ελεύθερο browser…"
+"Weekly summary email","Εβδομαδιαίο email σύνοψης"
+"Weekly summary: off.","Εβδομαδιαία σύνοψη: κλειστή."
+"Weekly summary: on, Monday mornings.","Εβδομαδιαία σύνοψη: ενεργή, Δευτέρα πρωί."
+"Working. Keep an eye on: %1","Λειτουργεί. Προσοχή σε: %1"
+"You get one email per problem and another when it is fixed. Change the address or switch these off under Stores > Configuration > MageSentinel.","Λαμβάνετε ένα email ανά πρόβλημα και άλλο ένα όταν διορθωθεί. Αλλάξτε τη διεύθυνση ή απενεργοποιήστε τα στο Stores > Configuration > MageSentinel."
+"[%1] Fixed: %2","[%1] Διορθώθηκε: %2"
+"[%1] Store problem: %2","[%1] Πρόβλημα στο κατάστημα: %2"
+"[%1] Your week: %2 orders","[%1] Η εβδομάδα σας: %2 παραγγελίες"
+"never","ποτέ"
+"the alert address","τη διεύθυνση ειδοποιήσεων"
+Everything that takes orders looks healthy,"Ό,τι παίρνει παραγγελίες δείχνει υγιές"
+Something is stopping or risking orders,Κάτι σταματά ή βάζει σε κίνδυνο παραγγελίες
+One thing needs attention,Ένα πράγμα θέλει προσοχή
+%1 things need attention,%1 πράγματα θέλουν προσοχή
+%1 of %2 checks healthy.,%1 από %2 έλεγχοι υγιείς.
+1 order,1 παραγγελία
+%1 orders,%1 παραγγελίες
+Store health %1%,Υγεία καταστήματος %1%
+"Orders, last 7 days","Παραγγελίες, τελευταίες 7 ημέρες"
+Today,Σήμερα
+"Orders by hour, last 24 hours","Παραγγελίες ανά ώρα, τελευταίες 24 ώρες"
+Now,Τώρα
+Revenue this week vs last week,Έσοδα αυτή την εβδομάδα έναντι της προηγούμενης
+last week %1,προηγ. εβδομάδα %1
+Opening the store,Άνοιγμα καταστήματος
+Finding a product,Εύρεση προϊόντος
+Adding to cart,Προσθήκη στο καλάθι
+Checking the cart,Έλεγχος καλαθιού
+Opening checkout,Άνοιγμα ταμείου
+Filling in customer details,Συμπλήρωση στοιχείων πελάτη
+Choosing shipping,Επιλογή αποστολής
+Choosing payment,Επιλογή πληρωμής
+Signing in,Σύνδεση
+Placing the order,Υποβολή παραγγελίας
+Confirming the order,Επιβεβαίωση παραγγελίας
+Cancelling the test order,Ακύρωση δοκιμαστικής παραγγελίας
+Store,Κατάστημα
+Product,Προϊόν
+Cart,Καλάθι
+Customer,Πελάτης
+Order,Παραγγελία
+Confirmed,Επιβεβαίωση
+Cancelled,Ακύρωση
+Starting…,Ξεκινά…
+Passed: a customer can buy.,Πέρασε: ένας πελάτης μπορεί να αγοράσει.
+Failed: a customer could not buy.,Απέτυχε: ένας πελάτης δεν θα μπορούσε να αγοράσει.
+"Passed, with warnings.","Πέρασε, με προειδοποιήσεις."
+Inconclusive: the check could not reach a verdict.,Αδιευκρίνιστο: ο έλεγχος δεν κατέληξε σε αποτέλεσμα.
+slowest,πιο αργό
+{step} took {share}% of the check,Το βήμα {step} πήρε το {share}% του ελέγχου
+Still running. The result will appear in MageSentinel.,Τρέχει ακόμη. Το αποτέλεσμα θα εμφανιστεί στο MageSentinel.
+"Want an email the next time this happens? MageSentinel runs this check every hour. 14 days free, no card.","Θέλετε email την επόμενη φορά που θα συμβεί; Το MageSentinel κάνει αυτόν τον έλεγχο κάθε ώρα. 14 ημέρες δωρεάν, χωρίς κάρτα."
+Start the free trial,Ξεκινήστε τη δωρεάν δοκιμή
+Monitored by MageSentinel,Παρακολουθείται από το MageSentinel
+Not connected,Δεν είναι συνδεδεμένο
+Checkout monitoring for %1,Παρακολούθηση checkout για %1
+Overview,Επισκόπηση
+Try MageSentinel free,Δοκιμάστε το MageSentinel δωρεάν
+Open MageSentinel,Άνοιγμα MageSentinel
+Self-check,Αυτοέλεγχος
+On,Ενεργά
+Off,Ανενεργά
+Last MageSentinel check,Τελευταίος έλεγχος MageSentinel
+Last test purchase,Τελευταία δοκιμαστική αγορά
+Test purchase now,Δοκιμαστική αγορά τώρα
+Test purchase,Δοκιμαστική αγορά
+Where the time went,Πού πήγε ο χρόνος
+Healthy,Υγιές
+Needs attention,Θέλει προσοχή
+Problem,Πρόβλημα
+last 24 hours,τελευταίες 24 ώρες
+Orders today,Παραγγελίες σήμερα
+vs the same hours a week ago,σε σχέση με τις ίδιες ώρες πριν μία εβδομάδα
+Same as the same hours a week ago,Ίδιες με τις ίδιες ώρες πριν μία εβδομάδα
+Revenue today,Έσοδα σήμερα
+average order %1,μέση παραγγελία %1
+Cancelled orders,Ακυρωμένες παραγγελίες
+%1 pending payment,%1 σε αναμονή πληρωμής
+Test purchases,Δοκιμαστικές αγορές
+all cancelled,όλες ακυρώθηκαν
+%1 cancelled,%1 ακυρώθηκαν
+"last 7 days, not counted in the numbers","τελευταίες 7 ημέρες, δεν μετρούν στα νούμερα"
+total,σύνολο
+MageSentinel test orders are not counted.,Οι δοκιμαστικές παραγγελίες του MageSentinel δεν μετρούν.
+peak,αιχμή
+Store time (%1).,Ώρα καταστήματος (%1).
+Health checks,Έλεγχοι υγείας
+checked just now,ελέγχθηκε μόλις τώρα
+This week,Αυτή η εβδομάδα
+Last week %1,Προηγούμενη εβδομάδα %1
+Checkout speed,Ταχύτητα checkout
+"end to end, last 30 test purchases","από άκρη σε άκρη, τελευταίες 30 δοκιμαστικές αγορές"
+"Connected, MageSentinel times your checkout on every test purchase, from the home page to the last click before paying, and tells you the moment it slows down.","Με σύνδεση, το MageSentinel χρονομετρά το checkout σε κάθε δοκιμαστική αγορά, από την αρχική σελίδα ως το τελευταίο κλικ πριν την πληρωμή, και σας ειδοποιεί μόλις αργήσει."
+No checks yet. Times appear here after MageSentinel's first test purchase.,Δεν υπάρχουν ακόμη έλεγχοι. Οι χρόνοι εμφανίζονται εδώ μετά την πρώτη δοκιμαστική αγορά του MageSentinel.
+Try it 14 days free,Δοκιμάστε το 14 ημέρες δωρεάν
+Last run,Τελευταία εκτέλεση
+"Median, last %1","Διάμεσος, τελευταίες %1"
+passed,πέρασε
+"passed, slow step","πέρασε, αργό βήμα"
+problem,πρόβλημα
+Scale %1; dashed line = median.,Κλίμακα %1· διακεκομμένη γραμμή = διάμεσος.
+Health over 7 days,Υγεία σε 7 ημέρες
+worst result of each day,χειρότερο αποτέλεσμα κάθε ημέρας
+No check,Χωρίς έλεγχο
+1 problem,1 πρόβλημα
+%1 problems,%1 προβλήματα
+The health checks run every 15 minutes on this store; each day keeps its worst result.,Οι έλεγχοι υγείας τρέχουν κάθε 15 λεπτά σε αυτό το κατάστημα· κάθε ημέρα κρατά το χειρότερο αποτέλεσμά της.
+Alerts,Ειδοποιήσεις
+Paused,Σε παύση
+Sent to,Αποστολή σε
+Weekly summary,Εβδομαδιαία σύνοψη
+Mondays,Δευτέρες
+Last check-in %1,Τελευταίος έλεγχος %1
+"MageSentinel buys from your store on a schedule and alerts you by email or Slack when a step breaks, so the health emails pause.","Το MageSentinel αγοράζει από το κατάστημά σας με πρόγραμμα και σας ειδοποιεί με email ή Slack όταν σπάσει ένα βήμα, γι' αυτό τα email υγείας είναι σε παύση."

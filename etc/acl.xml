@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <!--
+                The ancestor chain must match Magento_Config's own acl.xml exactly,
+                including Magento_Backend::stores_settings. Declaring
+                Magento_Config::config at any other position in the tree makes the
+                merged ACL contain the same resource id twice, and the builder
+                throws "Resource id 'Magento_Config::config' already exists in the
+                ACL" from Backend\Model\Auth\Session::refreshAcl() — which runs on
+                every admin request, so every admin page returns a 500. Observed on
+                a live store: installing this module locked the administrator out
+                of their own backend.
+            -->
+            <resource id="Magento_Backend::admin">
+                <resource id="MageSentinel_Monitor::menu" title="MageSentinel" sortOrder="85">
+                    <resource id="MageSentinel_Monitor::health" title="Store health and test purchase" sortOrder="10"/>
+                </resource>
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="MageSentinel_Monitor::config" title="MageSentinel Monitoring" sortOrder="400"/>
+                        </resource>
+                    </resource>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

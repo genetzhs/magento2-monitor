@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <job name="magesentinel_health_alerts" instance="MageSentinel\Monitor\Cron\Alerts" method="execute">
+            <schedule>*/15 * * * *</schedule>
+        </job>
+        <job name="magesentinel_weekly_summary" instance="MageSentinel\Monitor\Cron\Weekly" method="execute">
+            <schedule>7 * * * *</schedule>
+        </job>
+    </group>
+</config>

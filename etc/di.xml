@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="MageSentinel\Monitor\Api\DiagnosticsInterface"
+                type="MageSentinel\Monitor\Model\Diagnostics"/>
+    <preference for="MageSentinel\Monitor\Api\OrderCleanupInterface"
+                type="MageSentinel\Monitor\Model\OrderCleanup"/>
+    <preference for="MageSentinel\Monitor\Api\ProofInterface"
+                type="MageSentinel\Monitor\Model\Proof"/>
+    <!-- The merchant's opt-in CAPTCHA exemption for MageSentinel's own checks.
+         Inert unless allow_captcha_skip is on and the request carries the store's token. -->
+    <type name="Magento\ReCaptchaUi\Model\IsCaptchaEnabledInterface">
+        <plugin name="magesentinel_skip_recaptcha"
+                type="MageSentinel\Monitor\Plugin\SkipCaptchaForTrustedCheck"/>
+    </type>
+    <type name="Magento\Captcha\Model\DefaultModel">
+        <plugin name="magesentinel_skip_captcha"
+                type="MageSentinel\Monitor\Plugin\SkipCaptchaForTrustedCheck"/>
+    </type>
+</config>

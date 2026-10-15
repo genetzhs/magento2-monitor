@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <!--
+        Deliberately anonymous at the ACL level and guarded by a shared token
+        instead. Requiring an admin integration token would mean handing MageSentinel
+        credentials that can write; this endpoint can only read, and its token can
+        be rotated from the admin without touching integrations.
+    -->
+    <route url="/V1/magesentinel/diagnostics" method="GET">
+        <service class="MageSentinel\Monitor\Api\DiagnosticsInterface" method="get"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <!--
+        The module's only write. Guarded by the same token plus a second admin
+        switch that is off by default, and every restriction on which orders may
+        be cancelled is enforced inside OrderCleanup against the loaded order —
+        never taken on trust from the caller.
+    -->
+    <route url="/V1/magesentinel/orders/:incrementId/cancel" method="POST">
+        <service class="MageSentinel\Monitor\Api\OrderCleanupInterface" method="cancel"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <!--
+        The free monthly test's proof: a random code the admin's own click put
+        there, shown for two minutes at most. Anonymous by design; it says
+        nothing else about the store.
+    -->
+    <route url="/V1/magesentinel/proof" method="GET">
+        <service class="MageSentinel\Monitor\Api\ProofInterface" method="get"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+</routes>
