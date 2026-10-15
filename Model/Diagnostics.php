@@ -100,7 +100,7 @@ class Diagnostics implements DiagnosticsInterface
         });
 
         return [
-            'connector_version' => '2.0.1',
+            'connector_version' => '2.0.2',
             'collected_at' => gmdate('c'),
             'magento' => $this->magento(),
             'modules' => $this->modules(),

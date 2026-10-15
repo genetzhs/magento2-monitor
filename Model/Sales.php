@@ -119,10 +119,15 @@ class Sales
         return array_values($out);
     }
 
-    /** @return array<int, array{day:string, count:int, revenue:float}> */
+    /** @return array<int, array{day:string, count:int, revenue:float, last:int}> last = same weekday a week earlier */
     public function week(): array
     {
-        return array_slice($this->days(), 7);
+        $d = $this->days();
+        $out = array_slice($d, 7);
+        foreach ($out as $i => $row) {
+            $out[$i]['last'] = (int)$d[$i]['count'];
+        }
+        return $out;
     }
 
     /** @return array{days:array<int,string>, this:array<int,float>, last:array<int,float>} */

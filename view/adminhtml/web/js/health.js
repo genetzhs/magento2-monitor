@@ -283,9 +283,32 @@ define([], function () {
     });
   }
 
+  // Colour choice for this browser: auto follows the system, light/dark pin it.
+  function theme(app) {
+    var key = 'magesentinel-theme', now = 'auto';
+    try { now = localStorage.getItem(key) || 'auto'; } catch (e) { /* storage blocked: stay on auto */ }
+    function apply(t) {
+      app.setAttribute('data-ms-theme', t);
+      app.querySelectorAll('[data-ms-theme-opt]').forEach(function (b) {
+        var on = b.getAttribute('data-ms-theme-opt') === t;
+        b.classList.toggle('on', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+    apply(now);
+    app.querySelectorAll('[data-ms-theme-opt]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var t = b.getAttribute('data-ms-theme-opt');
+        try { if (t === 'auto') localStorage.removeItem(key); else localStorage.setItem(key, t); } catch (e) { /* not kept */ }
+        apply(t);
+      });
+    });
+  }
+
   return function (config, element) {
     cfg = config || {};
     [element].forEach(function (app) {
+    theme(app);
     var band = app.querySelector('[data-ms-verdict]');
     if (band) {
       settle(band, app.querySelector('[data-ms-checks]'));

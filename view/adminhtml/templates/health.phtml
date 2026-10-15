@@ -43,7 +43,7 @@ $hdays = $block->getHealthDays();
 $pill = ['on' => ['good', __('Monitored by MageSentinel')], 'quiet' => ['watch', __('Set up, not checking in')], 'off' => ['off', __('Not connected')]][$conn];
 $freeUsed = $conn === 'off' && !empty($free['next']) && (int)$free['next'] > time();
 ?>
-<div class="ms-app ms-page" data-mage-init='<?= $block->escapeHtmlAttr((string)json_encode(['MageSentinel_Monitor/js/health' => $block->getJsConfig()])) ?>'>
+<div class="ms-app ms-page" data-ms-theme="auto" data-mage-init='<?= $block->escapeHtmlAttr((string)json_encode(['MageSentinel_Monitor/js/health' => $block->getJsConfig()])) ?>'>
     <header class="ms-top ms-appear">
         <div class="ms-brand">
             <img class="ms-logo" src="<?= $block->escapeUrl($block->getViewFileUrl('MageSentinel_Monitor::images/logo.svg')) ?>" width="44" height="44" alt="">
@@ -51,6 +51,11 @@ $freeUsed = $conn === 'off' && !empty($free['next']) && (int)$free['next'] > tim
             <span class="ms-pill ms-pill-<?= $block->escapeHtmlAttr($pill[0]) ?>"><span class="ms-pulse"></span><?= $escaper->escapeHtml($pill[1]) ?></span>
         </div>
         <nav class="ms-nav" aria-label="MageSentinel">
+            <span class="ms-theme" role="group" aria-label="<?= $block->escapeHtmlAttr((string)__('Colours')) ?>" data-ms-theme-switch>
+                <?php foreach (['auto' => ['monitor', __('Match my system')], 'light' => ['sun', __('Light')], 'dark' => ['moon', __('Dark')]] as $key => [$ico, $label]): ?>
+                    <button type="button" class="ms-theme-opt<?= $key === 'auto' ? ' on' : '' ?>" data-ms-theme-opt="<?= $block->escapeHtmlAttr($key) ?>" title="<?= $block->escapeHtmlAttr((string)$label) ?>" aria-label="<?= $block->escapeHtmlAttr((string)$label) ?>" aria-pressed="<?= $key === 'auto' ? 'true' : 'false' ?>"><?= /* @noEscape */ $block->icon($ico, 15) ?></button>
+                <?php endforeach; ?>
+            </span>
             <a class="ms-tab on" href="<?= $block->escapeUrl($block->getUrl('magesentinel/health/index')) ?>" aria-current="page"><?= /* @noEscape */ $block->icon('gauge', 16) ?><?= $escaper->escapeHtml(__('Overview')) ?></a>
             <a class="ms-tab" href="<?= $block->escapeUrl($block->getSettingsUrl()) ?>"><?= /* @noEscape */ $block->icon('sliders', 16) ?><?= $escaper->escapeHtml(__('Settings')) ?></a>
             <?php if ($conn === 'off'): ?>
@@ -126,7 +131,7 @@ $freeUsed = $conn === 'off' && !empty($free['next']) && (int)$free['next'] > tim
         <div class="ms-card ms-appear" style="--d:6">
             <div class="ms-head"><h2><?= $escaper->escapeHtml(__('Orders, last 7 days')) ?></h2><small><?= $escaper->escapeHtml(__('total')) ?> <b><?= $escaper->escapeHtml($block->num(array_sum(array_column($week, 'count')))) ?></b></small></div>
             <?= /* @noEscape */ $block->weekChart($week) ?>
-            <div class="ms-foot"><span><?= $escaper->escapeHtml(__('MageSentinel test orders are not counted.')) ?></span></div>
+            <div class="ms-foot"><span class="ms-lg"><i class="ms-lg-wk"></i><?= $escaper->escapeHtml(__('this week')) ?> <i class="ms-lg-wkl"></i><?= $escaper->escapeHtml(__('week before')) ?></span><span><?= $escaper->escapeHtml(__('MageSentinel test orders are not counted.')) ?></span></div>
         </div>
         <div class="ms-card ms-appear" style="--d:7">
             <div class="ms-head"><h2><?= $escaper->escapeHtml(__('Orders by hour, last 24 hours')) ?></h2><?php if ($peakSlot): ?><small><?= $escaper->escapeHtml(__('peak')) ?> <b><?= $escaper->escapeHtml($peakSlot['short']) ?></b></small><?php endif; ?></div>
@@ -176,13 +181,13 @@ $freeUsed = $conn === 'off' && !empty($free['next']) && (int)$free['next'] > tim
                         <?php foreach (array_pad($speed, -30, null) as $r):
                             if ($r === null) { echo '<i class="ms-sp-none"></i>'; continue; }
                             $ms = (int)($r['ms'] ?? 0);
-                            $cls = ($r['status'] ?? '') === 'FAIL' ? 'ms-sp-fail' : (!empty($r['slow']) ? 'ms-sp-slow' : '');
+                            $cls = ($r['status'] ?? '') === 'FAIL' ? 'ms-sp-fail' : ($speedMed > 0 && $ms > 1.3 * $speedMed ? 'ms-sp-slow' : '');
                             $when = strtotime((string)($r['at'] ?? '')) ?: time();
                             ?><i class="<?= $block->escapeHtmlAttr($cls) ?>" style="height:<?= $block->escapeHtmlAttr((string)max(3, min(100, round(100 * $ms / $speedScale, 1)))) ?>%" title="<?= $block->escapeHtmlAttr($block->secs($ms) . ' · ' . $block->ago($when)) ?>"></i><?php
                         endforeach; ?>
                     </div>
                 </div>
-                <div class="ms-foot"><span class="ms-lg"><i class="ms-lg-pass"></i><?= $escaper->escapeHtml(__('passed')) ?> <i class="ms-lg-slow"></i><?= $escaper->escapeHtml(__('passed, slow step')) ?> <i class="ms-lg-fail"></i><?= $escaper->escapeHtml(__('problem')) ?></span><span><?= $escaper->escapeHtml(__('Scale %1; dashed line = median.', $block->secs($speedScale))) ?></span></div>
+                <div class="ms-foot"><span class="ms-lg"><i class="ms-lg-pass"></i><?= $escaper->escapeHtml(__('passed')) ?> <i class="ms-lg-slow"></i><?= $escaper->escapeHtml(__('slower than usual')) ?> <i class="ms-lg-fail"></i><?= $escaper->escapeHtml(__('problem')) ?></span><span><?= $escaper->escapeHtml(__('Scale %1; dashed line = median.', $block->secs($speedScale))) ?></span></div>
             <?php endif; ?>
         </div>
     </section>

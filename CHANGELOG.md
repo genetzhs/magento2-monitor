@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.2 – 2026-10-15
+
+- **Dark colours** on Store health, like the WordPress plugin. A switch in the header picks Match my system (the
+  default), Light or Dark; the choice is kept in this browser.
+- **Orders, last 7 days** puts each day next to the same day a week earlier (teal against grey).
+- **Checkout speed** bars are blue; amber now means a run clearly slower than your store's usual time, red a problem.
+
 ## 2.0.1 – 2026-10-15
 
 - Passes the Magento 2 coding standard with no errors (needed for the Adobe Commerce Marketplace): every template value

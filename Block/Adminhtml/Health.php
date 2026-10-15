@@ -297,6 +297,9 @@ class Health extends Template
             'code' => '<path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/>',
             'box' => '<path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/>',
             'refresh' => '<path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M3 21v-5h5"/>',
+            'sun' => '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/>',
+            'moon' => '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+            'monitor' => '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/>',
             'gauge' => '<path d="M12 14l4-4"/><path d="M3.3 19a10 10 0 1 1 17.4 0"/>',
             'external' => '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
             'receipt' => '<path d="M4 2v20l3-2 3 2 2-2 2 2 3-2 3 2V2l-3 2-3-2-2 2-2-2-3 2-3-2Z"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M8 16h5"/>',
@@ -376,7 +379,7 @@ class Health extends Template
         $out = '';
         foreach ([0, 0.5, 1] as $g) {
             $y = round($top + $plot * (1 - $g), 1) + 0.5;
-            $out .= '<line x1="' . $left . '" x2="' . $right . '" y1="' . $y . '" y2="' . $y . '" stroke="' . ($g ? '#eef0f5' : '#d5d9e3') . '" stroke-width="1"/>'
+            $out .= '<line x1="' . $left . '" x2="' . $right . '" y1="' . $y . '" y2="' . $y . '" class="' . ($g ? 'ms-gl' : 'ms-gl-base') . '" stroke="' . ($g ? '#eef0f5' : '#d5d9e3') . '" stroke-width="1"/>'
                 . '<text x="' . ($left - 8) . '" y="' . ($y + 4) . '" text-anchor="end" class="ms-tick">' . $this->num($max * $g) . '</text>';
         }
         return $out;
@@ -399,11 +402,13 @@ class Health extends Template
         $w = 560; $h = 200; $top = 24; $bottom = 26; $left = 30; $right = $w - 4;
         $plot = $h - $top - $bottom;
         $peak = $days ? (int)max(array_column($days, 'count')) : 0;
-        $max = $this->niceMax($peak);
+        $peakLast = $days ? (int)max(array_column($days, 'last')) : 0;
+        $max = $this->niceMax(max($peak, $peakLast));
         $band = ($right - $left) / $n;
-        $bw = min(40, $band * 0.56);
+        $bw = min(20, $band * 0.3);
+        $gap = 2;
         $out = '<div class="ms-plot" data-ms-plot><svg viewBox="0 0 ' . $w . ' ' . $h . '" role="img" aria-label="' . $this->attr((string)__('Orders, last 7 days')) . '">'
-            . $this->gradient('ms-teal', '#2dd4bf', '#0d9488') . $this->gradient('ms-teal-p', '#a7e3dc', '#a7e3dc', '.75')
+            . $this->gradient('ms-teal', '#2dd4bf', '#0d9488')
             . $this->yGrid($max, $left, $right, $top, $plot);
         $peakShown = false;
         foreach (array_values($days) as $i => $d) {
@@ -413,16 +418,21 @@ class Health extends Template
             $bh = $c > 0 ? max(3, $plot * $c / $max) : 0;
             $y = $top + $plot - $bh;
             $out .= '<g class="ms-hitg">';
+            $l = (int)($d['last'] ?? 0);
+            $lh = $l > 0 ? max(3, $plot * $l / $max) : 0;
+            if ($lh > 0) {
+                $out .= str_replace('class="ms-col"', 'class="ms-col ms-last"', $this->column($cx - $bw - $gap / 2, $top + $plot - $lh, $bw, $lh, 'currentColor', $i));
+            }
             if ($bh > 0) {
-                $out .= $this->column($cx - $bw / 2, $y, $bw, $bh, $today ? 'url(#ms-teal)' : 'url(#ms-teal-p)', $i);
+                $out .= str_replace('class="ms-col"', 'class="ms-col ms-this' . ($today ? ' now' : '') . '"', $this->column($cx + $gap / 2, $y, $bw, $bh, 'currentColor', $i));
             }
             $isPeak = !$peakShown && $c === $peak && $c > 0 && !$today;
             if ($today || $isPeak) {
                 $peakShown = $peakShown || $isPeak;
-                $out .= '<text class="ms-val" x="' . round($cx, 1) . '" y="' . round($y - 8, 1) . '" text-anchor="middle">' . $this->num($c) . '</text>';
+                $out .= '<text class="ms-val" x="' . round($cx + $gap / 2 + $bw / 2, 1) . '" y="' . round($y - 8, 1) . '" text-anchor="middle">' . $this->num($c) . '</text>';
             }
             $out .= '<text class="ms-tick' . ($today ? ' now' : '') . '" x="' . round($cx, 1) . '" y="' . ($h - 7) . '" text-anchor="middle">' . $this->escapeHtml($today ? (string)__('Today') : $this->dayName($d['day'])) . '</text>'
-                . '<rect class="ms-hit" x="' . round($left + $band * $i, 1) . '" y="' . $top . '" width="' . round($band, 1) . '" height="' . ($plot + $bottom) . '" data-x="' . round($cx, 1) . '" data-y="' . round($y, 1) . '" data-label="' . $this->attr($this->dayName($d['day'], 'EEE d MMM')) . '" data-value="' . $this->attr($this->ordersLabel($c)) . '"/></g>';
+                . '<rect class="ms-hit" x="' . round($left + $band * $i, 1) . '" y="' . $top . '" width="' . round($band, 1) . '" height="' . ($plot + $bottom) . '" data-x="' . round($cx, 1) . '" data-y="' . round($y, 1) . '" data-label="' . $this->attr($this->dayName($d['day'], 'EEE d MMM')) . '" data-value="' . $this->attr($this->ordersLabel($c) . ' · ' . __('week before: %1', $l)) . '"/></g>';
         }
         return $out . '</svg><div class="ms-tip" role="tooltip"></div></div>';
     }
@@ -478,7 +488,7 @@ class Health extends Template
             . $this->gradient('ms-rev', '#4f6ef7', '#4f6ef7', '0');
         for ($g = 1; $g <= 3; $g++) {
             $gy = round($top + $plot * $g / 4, 1);
-            $out .= '<line x1="' . $left . '" x2="' . $right . '" y1="' . $gy . '" y2="' . $gy . '" stroke="#eef1f6"/>';
+            $out .= '<line x1="' . $left . '" x2="' . $right . '" y1="' . $gy . '" y2="' . $gy . '" class="ms-gl" stroke="#eef1f6"/>';
         }
         $area = $x(0) . ',' . ($top + $plot) . ' ' . $pts($rev['this']) . ' ' . $x(6) . ',' . ($top + $plot);
         $out .= '<polygon class="ms-rev-area" points="' . $area . '" fill="url(#ms-rev)" fill-opacity=".18"/>'
@@ -486,7 +496,7 @@ class Health extends Template
             . '<polyline class="ms-rev-this" points="' . $pts($rev['this']) . '" fill="none" stroke="#4f6ef7" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
         foreach (array_values($rev['this']) as $i => $v) {
             $today = $i === 6;
-            $out .= '<g class="ms-hitg"><circle cx="' . $x($i) . '" cy="' . $y((float)$v) . '" r="' . ($today ? 4.5 : 3) . '" fill="' . ($today ? '#4f6ef7' : '#fff') . '" stroke="#4f6ef7" stroke-width="2"/>'
+            $out .= '<g class="ms-hitg"><circle cx="' . $x($i) . '" cy="' . $y((float)$v) . '" r="' . ($today ? 4.5 : 3) . '"' . ($today ? '' : ' class="ms-dot"') . ' fill="' . ($today ? '#4f6ef7' : '#fff') . '" stroke="#4f6ef7" stroke-width="2"/>'
                 . '<text class="ms-tick' . ($today ? ' now' : '') . '" x="' . $x($i) . '" y="' . ($h - 7) . '" text-anchor="middle">' . $this->escapeHtml($today ? (string)__('Today') : $this->dayName($rev['days'][$i])) . '</text>'
                 . '<rect class="ms-hit" x="' . round($x($i) - ($right - $left) / 12, 1) . '" y="' . $top . '" width="' . round(($right - $left) / 6, 1) . '" height="' . ($plot + $bottom) . '" data-x="' . $x($i) . '" data-y="' . $y((float)$v) . '" data-label="' . $this->attr($this->dayName($rev['days'][$i], 'EEE d MMM')) . '" data-value="' . $this->attr($this->money((float)$v, 0) . ' · ' . __('last week %1', $this->money((float)$rev['last'][$i], 0))) . '"/></g>';
         }
