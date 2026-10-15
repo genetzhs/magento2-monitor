@@ -329,7 +329,7 @@ class HealthChecks
             return [self::WATCH, __('HTTPS is not used on the storefront (Use Secure URLs on Storefront is off).')];
         }
         $context = stream_context_create(['ssl' => ['capture_peer_cert' => true, 'verify_peer' => false, 'SNI_enabled' => true, 'peer_name' => $host]]);
-        $socket = @stream_socket_client("ssl://{$host}:443", $errno, $errstr, 5, STREAM_CLIENT_CONNECT, $context);
+        $socket = $this->quiet(fn() => stream_socket_client("ssl://{$host}:443", $errno, $errstr, 5, STREAM_CLIENT_CONNECT, $context));
         if (!$socket) {
             return [self::UNKNOWN, __('Could not reach %1 from this server to read the certificate.', $host)];
         }
@@ -365,7 +365,7 @@ class HealthChecks
 
     private function disk(): array
     {
-        $free = @disk_free_space(BP);
+        $free = $this->quiet(fn() => disk_free_space(BP));
         if ($free === false) {
             return [self::UNKNOWN, __('Could not read the free space.')];
         }
@@ -388,5 +388,26 @@ class HealthChecks
             return (string)__('%1 h', (int)floor($minutes / 60));
         }
         return (string)__('%1 days', (int)floor($minutes / 1440));
+    }
+
+    /**
+     * Runs a filesystem or network call that reports failure by returning false,
+     * without letting its PHP warning reach the error handler.
+     *
+     * @param callable $call
+     * @return mixed
+     */
+    private function quiet(callable $call)
+    {
+        set_error_handler(static function () {
+            return true;
+        });
+        try {
+            return $call();
+        } catch (\Throwable $e) {
+            return false;
+        } finally {
+            restore_error_handler();
+        }
     }
 }

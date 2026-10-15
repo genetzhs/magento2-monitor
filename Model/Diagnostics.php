@@ -100,7 +100,7 @@ class Diagnostics implements DiagnosticsInterface
         });
 
         return [
-            'connector_version' => '2.0.0',
+            'connector_version' => '2.0.1',
             'collected_at' => gmdate('c'),
             'magento' => $this->magento(),
             'modules' => $this->modules(),
@@ -398,8 +398,8 @@ class Diagnostics implements DiagnosticsInterface
             // Magento fails in confusing, unrelated-looking ways when var/ can
             // no longer be written to, and nothing in the storefront says so.
             'disk' => $this->safe(function () use ($root) {
-                $free = @disk_free_space($root);
-                $total = @disk_total_space($root);
+                $free = $this->quiet(fn() => disk_free_space($root));
+                $total = $this->quiet(fn() => disk_total_space($root));
                 if ($free === false || $total === false || !$total) {
                     return null;
                 }
@@ -712,7 +712,7 @@ class Diagnostics implements DiagnosticsInterface
 
             $cutoff = time() - 86400;
             $files = [];
-            $names = @scandir($dir);
+            $names = $this->quiet(fn() => scandir($dir));
             if ($names === false) {
                 return null;
             }
@@ -724,7 +724,7 @@ class Diagnostics implements DiagnosticsInterface
                 if (!is_file($path)) {
                     continue;
                 }
-                $mtime = @filemtime($path);
+                $mtime = $this->quiet(fn() => filemtime($path));
                 if ($mtime === false || $mtime < $cutoff) {
                     continue;
                 }
@@ -771,7 +771,7 @@ class Diagnostics implements DiagnosticsInterface
      */
     private function crashReportType(string $path): string
     {
-        $head = (string)@file_get_contents($path, false, null, 0, 4096);
+        $head = (string)$this->quiet(fn() => file_get_contents($path, false, null, 0, 4096));
         if ($head === '') {
             return 'unknown';
         }
@@ -846,7 +846,7 @@ class Diagnostics implements DiagnosticsInterface
                 'http' => ['timeout' => 2, 'ignore_errors' => true],
             ]);
 
-            $health = @file_get_contents($base . '/_cluster/health', false, $context);
+            $health = $this->quiet(fn() => file_get_contents($base . '/_cluster/health', false, $context));
             if ($health === false) {
                 return $result;
             }
@@ -857,7 +857,7 @@ class Diagnostics implements DiagnosticsInterface
                 $result['status'] = (string)$decoded['status'];
             }
 
-            $root = @file_get_contents($base . '/', false, $context);
+            $root = $this->quiet(fn() => file_get_contents($base . '/', false, $context));
             $rootDecoded = is_string($root) ? json_decode($root, true) : null;
             if (is_array($rootDecoded) && isset($rootDecoded['version']['number'])) {
                 $result['version'] = (string)$rootDecoded['version']['number'];
@@ -998,7 +998,7 @@ class Diagnostics implements DiagnosticsInterface
      */
     private function tail(string $path, int $lines): array
     {
-        $handle = @fopen($path, 'r');
+        $handle = $this->quiet(fn() => fopen($path, 'r'));
         if ($handle === false) {
             return [];
         }
@@ -1028,6 +1028,27 @@ class Diagnostics implements DiagnosticsInterface
             return $fn();
         } catch (\Throwable $e) {
             return $fallback;
+        }
+    }
+
+    /**
+     * Runs a filesystem or network call that reports failure by returning false,
+     * without letting its PHP warning reach the error handler.
+     *
+     * @param callable $call
+     * @return mixed
+     */
+    private function quiet(callable $call)
+    {
+        set_error_handler(static function () {
+            return true;
+        });
+        try {
+            return $call();
+        } catch (\Throwable $e) {
+            return false;
+        } finally {
+            restore_error_handler();
         }
     }
 }

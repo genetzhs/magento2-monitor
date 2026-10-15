@@ -133,8 +133,8 @@ define([], function () {
       line.textContent = text;
       line.className = 'ms-test-line' + (tone ? ' ms-' + tone : '');
     }
-    var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
-    var CROSS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg>';
+    var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>';
+    var CROSS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"></path></svg>';
     var begun = {}, took = {}, lastIdx = -1;
     function secs(ms) { return ms < 10000 ? (ms / 1000).toFixed(1) + 's' : Math.round(ms / 1000) + 's'; }
     function paint(p) {

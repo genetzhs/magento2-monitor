@@ -3,6 +3,7 @@
  * Store health — the same overview as the MageSentinel WordPress plugin.
  *
  * @var \MageSentinel\Monitor\Block\Adminhtml\Health $block
+ * @var \Magento\Framework\Escaper $escaper
  */
 $rows = $block->getSortedRows();
 $v = $block->getVerdict();
@@ -41,24 +42,21 @@ $lastSpeed = $speed ? end($speed) : null;
 $hdays = $block->getHealthDays();
 $pill = ['on' => ['good', __('Monitored by MageSentinel')], 'quiet' => ['watch', __('Set up, not checking in')], 'off' => ['off', __('Not connected')]][$conn];
 $freeUsed = $conn === 'off' && !empty($free['next']) && (int)$free['next'] > time();
-$e = static function ($x) use ($block) {
-    return $block->escapeHtml((string)$x);
-};
 ?>
 <div class="ms-app ms-page" data-mage-init='<?= $block->escapeHtmlAttr((string)json_encode(['MageSentinel_Monitor/js/health' => $block->getJsConfig()])) ?>'>
     <header class="ms-top ms-appear">
         <div class="ms-brand">
             <img class="ms-logo" src="<?= $block->escapeUrl($block->getViewFileUrl('MageSentinel_Monitor::images/logo.svg')) ?>" width="44" height="44" alt="">
-            <div><h1>MageSentinel</h1><p><?= $e(__('Checkout monitoring for %1', (string)parse_url($block->getSite(), PHP_URL_HOST))) ?></p></div>
-            <span class="ms-pill ms-pill-<?= $block->escapeHtmlAttr($pill[0]) ?>"><span class="ms-pulse"></span><?= $e($pill[1]) ?></span>
+            <div><h1>MageSentinel</h1><p><?= $escaper->escapeHtml(__('Checkout monitoring for %1', (string)parse_url($block->getSite(), PHP_URL_HOST))) ?></p></div>
+            <span class="ms-pill ms-pill-<?= $block->escapeHtmlAttr($pill[0]) ?>"><span class="ms-pulse"></span><?= $escaper->escapeHtml($pill[1]) ?></span>
         </div>
         <nav class="ms-nav" aria-label="MageSentinel">
-            <a class="ms-tab on" href="<?= $block->escapeUrl($block->getUrl('magesentinel/health/index')) ?>" aria-current="page"><?= /* @noEscape */ $block->icon('gauge', 16) ?><?= $e(__('Overview')) ?></a>
-            <a class="ms-tab" href="<?= $block->escapeUrl($block->getSettingsUrl()) ?>"><?= /* @noEscape */ $block->icon('sliders', 16) ?><?= $e(__('Settings')) ?></a>
+            <a class="ms-tab on" href="<?= $block->escapeUrl($block->getUrl('magesentinel/health/index')) ?>" aria-current="page"><?= /* @noEscape */ $block->icon('gauge', 16) ?><?= $escaper->escapeHtml(__('Overview')) ?></a>
+            <a class="ms-tab" href="<?= $block->escapeUrl($block->getSettingsUrl()) ?>"><?= /* @noEscape */ $block->icon('sliders', 16) ?><?= $escaper->escapeHtml(__('Settings')) ?></a>
             <?php if ($conn === 'off'): ?>
-                <a class="ms-btn ms-btn-primary" href="<?= $block->escapeUrl($block->getSignupUrl()) ?>" target="_blank" rel="noopener"><?= $e(__('Try MageSentinel free')) ?><?= /* @noEscape */ $block->icon('external', 15) ?></a>
+                <a class="ms-btn ms-btn-primary" href="<?= $block->escapeUrl($block->getSignupUrl()) ?>" target="_blank" rel="noopener"><?= $escaper->escapeHtml(__('Try MageSentinel free')) ?><?= /* @noEscape */ $block->icon('external', 15) ?></a>
             <?php else: ?>
-                <a class="ms-btn ms-btn-primary" href="<?= $block->escapeUrl($block->getDashboardUrl()) ?>" target="_blank" rel="noopener"><?= $e(__('Open MageSentinel')) ?><?= /* @noEscape */ $block->icon('external', 15) ?></a>
+                <a class="ms-btn ms-btn-primary" href="<?= $block->escapeUrl($block->getDashboardUrl()) ?>" target="_blank" rel="noopener"><?= $escaper->escapeHtml(__('Open MageSentinel')) ?><?= /* @noEscape */ $block->icon('external', 15) ?></a>
             <?php endif; ?>
         </nav>
     </header>
@@ -66,87 +64,87 @@ $e = static function ($x) use ($block) {
     <section class="ms-card ms-verdict ms-appear" style="--d:1" aria-live="polite" data-ms-verdict>
         <?= /* @noEscape */ $block->ring($v['pct']) ?>
         <div>
-            <h2><?= $e($v['title']) ?></h2>
-            <p><?= $e($v['sub']) ?></p>
+            <h2><?= $escaper->escapeHtml($v['title']) ?></h2>
+            <p><?= $escaper->escapeHtml($v['sub']) ?></p>
         </div>
         <div class="ms-meta">
             <?php if ($conn === 'off'): ?>
-                <div><span><?= $e(__('Self-check')) ?></span><strong><?= $e($block->getLastChecked() ? $block->ago($block->getLastChecked()) : __('Checked just now.')) ?></strong></div>
-                <div><span><?= $e(__('Emails')) ?></span><strong><?= $e($block->getAlertsEnabled() ? __('On') : __('Off')) ?></strong></div>
+                <div><span><?= $escaper->escapeHtml(__('Self-check')) ?></span><strong><?= $escaper->escapeHtml($block->getLastChecked() ? $block->ago($block->getLastChecked()) : __('Checked just now.')) ?></strong></div>
+                <div><span><?= $escaper->escapeHtml(__('Emails')) ?></span><strong><?= $escaper->escapeHtml($block->getAlertsEnabled() ? __('On') : __('Off')) ?></strong></div>
             <?php else: ?>
-                <div><span><?= $e(__('Last MageSentinel check')) ?></span><strong><?= $e($block->ago($block->getLastSeen())) ?></strong></div>
-                <div><span><?= $e(__('Last test purchase')) ?></span><strong><?= $e($block->ago($tests['last'])) ?></strong></div>
+                <div><span><?= $escaper->escapeHtml(__('Last MageSentinel check')) ?></span><strong><?= $escaper->escapeHtml($block->ago($block->getLastSeen())) ?></strong></div>
+                <div><span><?= $escaper->escapeHtml(__('Last test purchase')) ?></span><strong><?= $escaper->escapeHtml($block->ago($tests['last'])) ?></strong></div>
             <?php endif; ?>
-            <button type="button" class="ms-btn ms-btn-primary" data-ms-test-start data-busy="<?= $block->escapeHtmlAttr((string)__('Running…')) ?>"<?= $freeUsed ? ' disabled title="' . $block->escapeHtmlAttr((string)__('This month\'s free test was used. Next one: %1.', date('Y-m-d', (int)$free['next']))) . '"' : '' ?>><?= /* @noEscape */ $block->icon('cart', 15) ?><span><?= $e($conn === 'off' ? __('Free test purchase') : __('Test purchase now')) ?></span></button>
+            <button type="button" class="ms-btn ms-btn-primary" data-ms-test-start data-busy="<?= $block->escapeHtmlAttr((string)__('Running…')) ?>"<?= $freeUsed ? ' disabled title="' . $block->escapeHtmlAttr((string)__('This month\'s free test was used. Next one: %1.', date('Y-m-d', (int)$free['next']))) . '"' : '' ?>><?= /* @noEscape */ $block->icon('cart', 15) ?><span><?= $escaper->escapeHtml($conn === 'off' ? __('Free test purchase') : __('Test purchase now')) ?></span></button>
             <form class="ms-inline" method="post" action="<?= $block->escapeUrl($block->getRecheckUrl()) ?>">
                 <input type="hidden" name="form_key" value="<?= $block->escapeHtmlAttr($block->getFormKey()) ?>">
-                <button type="submit" class="ms-btn ms-btn-ghost" data-ms-recheck><?= /* @noEscape */ $block->icon('refresh', 15) ?><?= $e(__('Check again')) ?></button>
+                <button type="submit" class="ms-btn ms-btn-ghost" data-ms-recheck><?= /* @noEscape */ $block->icon('refresh', 15) ?><?= $escaper->escapeHtml(__('Check again')) ?></button>
             </form>
         </div>
         <?= /* @noEscape */ $block->strip($rows) ?>
         <div class="ms-test" data-ms-test hidden>
-            <span class="ms-test-title"><?= $e(__('Test purchase')) ?></span>
+            <span class="ms-test-title"><?= $escaper->escapeHtml(__('Test purchase')) ?></span>
             <ol class="ms-flow" data-ms-test-bar></ol>
             <div class="ms-split" data-ms-split hidden>
-                <div class="ms-split-head"><span><?= $e(__('Where the time went')) ?></span><span data-ms-split-hint></span></div>
+                <div class="ms-split-head"><span><?= $escaper->escapeHtml(__('Where the time went')) ?></span><span data-ms-split-hint></span></div>
                 <div class="ms-split-bar" data-ms-split-bar></div>
             </div>
             <p class="ms-test-line" role="status" data-ms-test-line></p>
         </div>
         <?php if ($conn === 'off'): ?>
-            <p class="ms-note"><?= $e($freeUsed
+            <p class="ms-note"><?= $escaper->escapeHtml($freeUsed
                 ? __('This month\'s free test was used. Next one: %1.', date('Y-m-d', (int)$free['next']))
                 : __('A real browser opens your store, finds a product, adds it to the cart and goes through checkout up to the payment step, the way a shopper does. No order is placed. Free once a month, no account; the result is emailed to %1.', $block->getRecipient() ?: __('the alert address'))) ?></p>
         <?php endif; ?>
-        <div class="ms-legend"><span><i class="ms-good"></i><?= $e(__('Healthy')) ?></span><span><i class="ms-watch"></i><?= $e(__('Needs attention')) ?></span><span><i class="ms-bad"></i><?= $e(__('Problem')) ?></span></div>
+        <div class="ms-legend"><span><i class="ms-good"></i><?= $escaper->escapeHtml(__('Healthy')) ?></span><span><i class="ms-watch"></i><?= $escaper->escapeHtml(__('Needs attention')) ?></span><span><i class="ms-bad"></i><?= $escaper->escapeHtml(__('Problem')) ?></span></div>
     </section>
 
     <section class="ms-kpis" aria-label="<?= $block->escapeHtmlAttr((string)__('last 24 hours')) ?>">
         <div class="ms-card ms-kpi ms-appear" style="--d:2">
-            <span class="ms-kpi-l"><?= /* @noEscape */ $block->icon('cart', 16) ?><?= $e(__('Orders today')) ?></span>
-            <span class="ms-kpi-v" data-ms-count="<?= (int)$today ?>"><?= $e($block->num($today)) ?></span>
-            <span class="ms-kpi-d"><?php if ($delta !== 0): ?><span class="<?= $delta > 0 ? 'ms-up' : 'ms-down' ?>"><?= $e(($delta > 0 ? '+' : '−') . $block->num(abs($delta))) ?></span><?= $e(__('vs the same hours a week ago')) ?><?php else: ?><?= $e(__('Same as the same hours a week ago')) ?><?php endif; ?></span>
+            <span class="ms-kpi-l"><?= /* @noEscape */ $block->icon('cart', 16) ?><?= $escaper->escapeHtml(__('Orders today')) ?></span>
+            <span class="ms-kpi-v" data-ms-count="<?= (int)$today ?>"><?= $escaper->escapeHtml($block->num($today)) ?></span>
+            <span class="ms-kpi-d"><?php if ($delta !== 0): ?><span class="<?= $delta > 0 ? 'ms-up' : 'ms-down' ?>"><?= $escaper->escapeHtml(($delta > 0 ? '+' : '−') . $block->num(abs($delta))) ?></span><?= $escaper->escapeHtml(__('vs the same hours a week ago')) ?><?php else: ?><?= $escaper->escapeHtml(__('Same as the same hours a week ago')) ?><?php endif; ?></span>
         </div>
         <div class="ms-card ms-kpi ms-appear" style="--d:3">
-            <span class="ms-kpi-l"><?= /* @noEscape */ $block->icon('receipt', 16) ?><?= $e(__('Revenue today')) ?></span>
-            <span class="ms-kpi-v"><?= $e($block->money($s['revenue'])) ?></span>
-            <span class="ms-kpi-d"><?= $e($s['paid'] > 0 ? __('average order %1', $block->money($s['revenue'] / $s['paid'])) : __('last 24 hours')) ?></span>
+            <span class="ms-kpi-l"><?= /* @noEscape */ $block->icon('receipt', 16) ?><?= $escaper->escapeHtml(__('Revenue today')) ?></span>
+            <span class="ms-kpi-v"><?= $escaper->escapeHtml($block->money($s['revenue'])) ?></span>
+            <span class="ms-kpi-d"><?= $escaper->escapeHtml($s['paid'] > 0 ? __('average order %1', $block->money($s['revenue'] / $s['paid'])) : __('last 24 hours')) ?></span>
         </div>
         <div class="ms-card ms-kpi ms-appear" style="--d:4">
-            <span class="ms-kpi-l"><?= /* @noEscape */ $block->icon('card', 16) ?><?= $e(__('Cancelled orders')) ?></span>
-            <span class="ms-kpi-v" data-ms-count="<?= (int)$s['failed'] ?>"><?= $e($block->num($s['failed'])) ?></span>
-            <span class="ms-kpi-d"><span class="ms-chip<?= $s['pending'] >= 5 ? ' ms-watch' : '' ?>"><?= $e(__('%1 pending payment', $s['pending'])) ?></span></span>
+            <span class="ms-kpi-l"><?= /* @noEscape */ $block->icon('card', 16) ?><?= $escaper->escapeHtml(__('Cancelled orders')) ?></span>
+            <span class="ms-kpi-v" data-ms-count="<?= (int)$s['failed'] ?>"><?= $escaper->escapeHtml($block->num($s['failed'])) ?></span>
+            <span class="ms-kpi-d"><span class="ms-chip<?= $s['pending'] >= 5 ? ' ms-watch' : '' ?>"><?= $escaper->escapeHtml(__('%1 pending payment', $s['pending'])) ?></span></span>
         </div>
         <div class="ms-card ms-kpi ms-appear" style="--d:5">
-            <span class="ms-kpi-l"><?= /* @noEscape */ $block->icon('eye', 16) ?><?= $e(__('Test purchases')) ?></span>
-            <span class="ms-kpi-v" data-ms-count="<?= (int)$tests['count'] ?>"><?= $e($block->num($tests['count'])) ?></span>
-            <span class="ms-kpi-d"><?php if ($tests['count']): ?><span class="ms-chip <?= $tests['cancelled'] === $tests['count'] ? 'ms-good' : 'ms-watch' ?>"><?= $e($tests['cancelled'] === $tests['count'] ? __('all cancelled') : __('%1 cancelled', $tests['cancelled'])) ?></span><?php endif; ?><?= $e(__('last 7 days, not counted in the numbers')) ?></span>
+            <span class="ms-kpi-l"><?= /* @noEscape */ $block->icon('eye', 16) ?><?= $escaper->escapeHtml(__('Test purchases')) ?></span>
+            <span class="ms-kpi-v" data-ms-count="<?= (int)$tests['count'] ?>"><?= $escaper->escapeHtml($block->num($tests['count'])) ?></span>
+            <span class="ms-kpi-d"><?php if ($tests['count']): ?><span class="ms-chip <?= $tests['cancelled'] === $tests['count'] ? 'ms-good' : 'ms-watch' ?>"><?= $escaper->escapeHtml($tests['cancelled'] === $tests['count'] ? __('all cancelled') : __('%1 cancelled', $tests['cancelled'])) ?></span><?php endif; ?><?= $escaper->escapeHtml(__('last 7 days, not counted in the numbers')) ?></span>
         </div>
     </section>
 
     <section class="ms-g2">
         <div class="ms-card ms-appear" style="--d:6">
-            <div class="ms-head"><h2><?= $e(__('Orders, last 7 days')) ?></h2><small><?= $e(__('total')) ?> <b><?= $e($block->num(array_sum(array_column($week, 'count')))) ?></b></small></div>
+            <div class="ms-head"><h2><?= $escaper->escapeHtml(__('Orders, last 7 days')) ?></h2><small><?= $escaper->escapeHtml(__('total')) ?> <b><?= $escaper->escapeHtml($block->num(array_sum(array_column($week, 'count')))) ?></b></small></div>
             <?= /* @noEscape */ $block->weekChart($week) ?>
-            <div class="ms-foot"><span><?= $e(__('MageSentinel test orders are not counted.')) ?></span></div>
+            <div class="ms-foot"><span><?= $escaper->escapeHtml(__('MageSentinel test orders are not counted.')) ?></span></div>
         </div>
         <div class="ms-card ms-appear" style="--d:7">
-            <div class="ms-head"><h2><?= $e(__('Orders by hour, last 24 hours')) ?></h2><?php if ($peakSlot): ?><small><?= $e(__('peak')) ?> <b><?= $e($peakSlot['short']) ?></b></small><?php endif; ?></div>
+            <div class="ms-head"><h2><?= $escaper->escapeHtml(__('Orders by hour, last 24 hours')) ?></h2><?php if ($peakSlot): ?><small><?= $escaper->escapeHtml(__('peak')) ?> <b><?= $escaper->escapeHtml($peakSlot['short']) ?></b></small><?php endif; ?></div>
             <?= /* @noEscape */ $block->dayChart($slots) ?>
-            <div class="ms-foot"><span><?= $e($today > 0 ? __('Store time (%1).', $sales->zone()->getName()) : __('No orders in the last 24 hours.')) ?></span></div>
+            <div class="ms-foot"><span><?= $escaper->escapeHtml($today > 0 ? __('Store time (%1).', $sales->zone()->getName()) : __('No orders in the last 24 hours.')) ?></span></div>
         </div>
     </section>
 
     <section class="ms-card ms-appear" style="--d:8">
-        <div class="ms-head"><h2><?= $e(__('Health checks')) ?></h2><small><?= $e(__('checked just now')) ?></small></div>
+        <div class="ms-head"><h2><?= $escaper->escapeHtml(__('Health checks')) ?></h2><small><?= $escaper->escapeHtml(__('checked just now')) ?></small></div>
         <div class="ms-checks" data-ms-checks>
             <?php foreach ($rows as $row): $t = $block->tone($row['state']); ?>
                 <div class="ms-check ms-<?= $block->escapeHtmlAttr($t) ?>" data-s="<?= $block->escapeHtmlAttr($t) ?>">
                     <span class="ms-ci"><?= /* @noEscape */ $block->rowIcon($row['id']) ?></span>
                     <div>
-                        <h3><?= $e($row['label']) ?></h3>
-                        <p><?= $e($row['detail']) ?></p>
-                        <?php if ($url = $block->getFixUrl($row['fix'])): ?><a href="<?= $block->escapeUrl($url) ?>"><?= $e(__('Fix')) ?> →</a><?php endif; ?>
+                        <h3><?= $escaper->escapeHtml($row['label']) ?></h3>
+                        <p><?= $escaper->escapeHtml($row['detail']) ?></p>
+                        <?php if ($url = $block->getFixUrl($row['fix'])): ?><a href="<?= $block->escapeUrl($url) ?>"><?= $escaper->escapeHtml(__('Fix')) ?> →</a><?php endif; ?>
                     </div>
                     <span class="ms-st ms-<?= $block->escapeHtmlAttr($t) ?>"><?= /* @noEscape */ $block->stateIcon($t) ?></span>
                 </div>
@@ -156,24 +154,24 @@ $e = static function ($x) use ($block) {
 
     <section class="ms-g2">
         <div class="ms-card ms-appear" style="--d:9">
-            <div class="ms-head"><h2><?= $e(__('Revenue this week vs last week')) ?></h2><small><b><?= $e($block->money($revThis, 0)) ?></b><?php if ($revPct !== null): ?> <span class="<?= $revPct >= 0 ? 'ms-up' : 'ms-down' ?>"><?= $e(($revPct >= 0 ? '+' : '−') . abs($revPct) . '%') ?></span><?php endif; ?></small></div>
+            <div class="ms-head"><h2><?= $escaper->escapeHtml(__('Revenue this week vs last week')) ?></h2><small><b><?= $escaper->escapeHtml($block->money($revThis, 0)) ?></b><?php if ($revPct !== null): ?> <span class="<?= $revPct >= 0 ? 'ms-up' : 'ms-down' ?>"><?= $escaper->escapeHtml(($revPct >= 0 ? '+' : '−') . abs($revPct) . '%') ?></span><?php endif; ?></small></div>
             <?= /* @noEscape */ $block->revenueChart($rev) ?>
-            <div class="ms-foot"><span class="ms-lg"><i class="ms-lg-this"></i><?= $e(__('This week')) ?> <i class="ms-lg-last"></i><?= $e(__('Last week %1', $block->money($revLast, 0))) ?></span></div>
+            <div class="ms-foot"><span class="ms-lg"><i class="ms-lg-this"></i><?= $escaper->escapeHtml(__('This week')) ?> <i class="ms-lg-last"></i><?= $escaper->escapeHtml(__('Last week %1', $block->money($revLast, 0))) ?></span></div>
         </div>
         <div class="ms-card ms-appear" style="--d:10">
-            <div class="ms-head"><h2><?= $e(__('Checkout speed')) ?></h2><small><?= $e(__('end to end, last 30 test purchases')) ?></small></div>
+            <div class="ms-head"><h2><?= $escaper->escapeHtml(__('Checkout speed')) ?></h2><small><?= $escaper->escapeHtml(__('end to end, last 30 test purchases')) ?></small></div>
             <?php if (!$speedMs): ?>
-                <p class="ms-empty"><?= $e($conn === 'off'
+                <p class="ms-empty"><?= $escaper->escapeHtml($conn === 'off'
                     ? __('Connected, MageSentinel times your checkout on every test purchase, from the home page to the last click before paying, and tells you the moment it slows down.')
                     : __('No checks yet. Times appear here after MageSentinel\'s first test purchase.')) ?></p>
-                <?php if ($conn === 'off'): ?><p class="ms-note"><a href="<?= $block->escapeUrl($block->getSignupUrl()) ?>" target="_blank" rel="noopener"><?= $e(__('Try it 14 days free')) ?> →</a></p><?php endif; ?>
+                <?php if ($conn === 'off'): ?><p class="ms-note"><a href="<?= $block->escapeUrl($block->getSignupUrl()) ?>" target="_blank" rel="noopener"><?= $escaper->escapeHtml(__('Try it 14 days free')) ?> →</a></p><?php endif; ?>
             <?php else: ?>
                 <div class="ms-speed-kpis">
-                    <div><span><?= $e(__('Last run')) ?></span><strong><?= $e($block->secs((int)($lastSpeed['ms'] ?? 0))) ?></strong></div>
-                    <div><span><?= $e(__('Median, last %1', count($speedMs))) ?></span><strong><?= $e($block->secs($speedMed)) ?></strong></div>
+                    <div><span><?= $escaper->escapeHtml(__('Last run')) ?></span><strong><?= $escaper->escapeHtml($block->secs((int)($lastSpeed['ms'] ?? 0))) ?></strong></div>
+                    <div><span><?= $escaper->escapeHtml(__('Median, last %1', count($speedMs))) ?></span><strong><?= $escaper->escapeHtml($block->secs($speedMed)) ?></strong></div>
                 </div>
                 <div class="ms-speed" style="--med:<?= $block->escapeHtmlAttr((string)round(100 * $speedMed / $speedScale, 1)) ?>%">
-                    <span class="ms-speed-med"><b><?= $e($block->secs($speedMed)) ?></b></span>
+                    <span class="ms-speed-med"><b><?= $escaper->escapeHtml($block->secs($speedMed)) ?></b></span>
                     <div class="ms-speed-bars">
                         <?php foreach (array_pad($speed, -30, null) as $r):
                             if ($r === null) { echo '<i class="ms-sp-none"></i>'; continue; }
@@ -184,14 +182,14 @@ $e = static function ($x) use ($block) {
                         endforeach; ?>
                     </div>
                 </div>
-                <div class="ms-foot"><span class="ms-lg"><i class="ms-lg-pass"></i><?= $e(__('passed')) ?> <i class="ms-lg-slow"></i><?= $e(__('passed, slow step')) ?> <i class="ms-lg-fail"></i><?= $e(__('problem')) ?></span><span><?= $e(__('Scale %1; dashed line = median.', $block->secs($speedScale))) ?></span></div>
+                <div class="ms-foot"><span class="ms-lg"><i class="ms-lg-pass"></i><?= $escaper->escapeHtml(__('passed')) ?> <i class="ms-lg-slow"></i><?= $escaper->escapeHtml(__('passed, slow step')) ?> <i class="ms-lg-fail"></i><?= $escaper->escapeHtml(__('problem')) ?></span><span><?= $escaper->escapeHtml(__('Scale %1; dashed line = median.', $block->secs($speedScale))) ?></span></div>
             <?php endif; ?>
         </div>
     </section>
 
     <section class="ms-g2">
         <div class="ms-card ms-appear" style="--d:11">
-            <div class="ms-head"><h2><?= $e(__('Health over 7 days')) ?></h2><small><?= $e(__('worst result of each day')) ?></small></div>
+            <div class="ms-head"><h2><?= $escaper->escapeHtml(__('Health over 7 days')) ?></h2><small><?= $escaper->escapeHtml(__('worst result of each day')) ?></small></div>
             <div class="ms-days">
                 <?php foreach ($hdays as $i => $d):
                     $st = $d['state'];
@@ -199,29 +197,29 @@ $e = static function ($x) use ($block) {
                     ?>
                     <div class="ms-day ms-<?= $block->escapeHtmlAttr($st ?? 'none') ?>" title="<?= $block->escapeHtmlAttr($block->dayName($d['day'], 'EEE d MMM') . ' · ' . $label) ?>">
                         <span class="ms-day-cell"><?= /* @noEscape */ $st ? $block->stateIcon($st) : '' ?></span>
-                        <span class="ms-day-name"><?= $e($i === 6 ? __('Today') : $block->dayName($d['day'])) ?></span>
+                        <span class="ms-day-name"><?= $escaper->escapeHtml($i === 6 ? __('Today') : $block->dayName($d['day'])) ?></span>
                     </div>
                 <?php endforeach; ?>
             </div>
-            <p class="ms-note"><?= $e(__('The health checks run every 15 minutes on this store; each day keeps its worst result.')) ?></p>
+            <p class="ms-note"><?= $escaper->escapeHtml(__('The health checks run every 15 minutes on this store; each day keeps its worst result.')) ?></p>
         </div>
         <div class="ms-card ms-appear" style="--d:12">
-            <div class="ms-head"><h2><?= $e(__('Alerts')) ?></h2><?php if ($conn === 'on'): ?><span class="ms-chip ms-good"><?= $e(__('Connected')) ?></span><?php elseif ($conn === 'quiet'): ?><span class="ms-chip ms-watch"><?= $e(__('Set up, not checking in')) ?></span><?php endif; ?></div>
+            <div class="ms-head"><h2><?= $escaper->escapeHtml(__('Alerts')) ?></h2><?php if ($conn === 'on'): ?><span class="ms-chip ms-good"><?= $escaper->escapeHtml(__('Connected')) ?></span><?php elseif ($conn === 'quiet'): ?><span class="ms-chip ms-watch"><?= $escaper->escapeHtml(__('Set up, not checking in')) ?></span><?php endif; ?></div>
             <dl class="ms-facts">
-                <div><dt><?= $e(__('Health emails')) ?></dt><dd><?php if (!$block->getAlertsEnabled()): ?><span class="ms-chip"><?= $e(__('Off')) ?></span><?php elseif ($block->getAlertsPaused()): ?><span class="ms-chip"><?= $e(__('Paused')) ?></span><?php else: ?><span class="ms-chip ms-good"><?= $e(__('On')) ?></span><?php endif; ?></dd></div>
-                <div><dt><?= $e(__('Sent to')) ?></dt><dd><?= $e($block->getRecipient() ?: '—') ?></dd></div>
-                <div><dt><?= $e(__('Weekly summary')) ?></dt><dd><span class="ms-chip<?= $block->getWeeklyEnabled() ? ' ms-good' : '' ?>"><?= $e($block->getWeeklyEnabled() ? __('Mondays') : __('Off')) ?></span></dd></div>
-                <div><dt><?= $e(__('MageSentinel monitoring')) ?></dt><dd><?= $e($conn === 'off' ? __('Not connected') : __('Last check-in %1', $block->ago($block->getLastSeen()))) ?></dd></div>
+                <div><dt><?= $escaper->escapeHtml(__('Health emails')) ?></dt><dd><?php if (!$block->getAlertsEnabled()): ?><span class="ms-chip"><?= $escaper->escapeHtml(__('Off')) ?></span><?php elseif ($block->getAlertsPaused()): ?><span class="ms-chip"><?= $escaper->escapeHtml(__('Paused')) ?></span><?php else: ?><span class="ms-chip ms-good"><?= $escaper->escapeHtml(__('On')) ?></span><?php endif; ?></dd></div>
+                <div><dt><?= $escaper->escapeHtml(__('Sent to')) ?></dt><dd><?= $escaper->escapeHtml($block->getRecipient() ?: '—') ?></dd></div>
+                <div><dt><?= $escaper->escapeHtml(__('Weekly summary')) ?></dt><dd><span class="ms-chip<?= $block->getWeeklyEnabled() ? ' ms-good' : '' ?>"><?= $escaper->escapeHtml($block->getWeeklyEnabled() ? __('Mondays') : __('Off')) ?></span></dd></div>
+                <div><dt><?= $escaper->escapeHtml(__('MageSentinel monitoring')) ?></dt><dd><?= $escaper->escapeHtml($conn === 'off' ? __('Not connected') : __('Last check-in %1', $block->ago($block->getLastSeen()))) ?></dd></div>
             </dl>
             <p class="ms-note"><?php
                 if ($conn === 'on') {
-                    echo $e(__('MageSentinel buys from your store on a schedule and alerts you by email or Slack when a step breaks, so the health emails pause.'));
+                    echo $escaper->escapeHtml(__('MageSentinel buys from your store on a schedule and alerts you by email or Slack when a step breaks, so the health emails pause.'));
                 } elseif ($conn === 'quiet') {
-                    echo $e(__('The connector is on, but MageSentinel has not read this store for 3 hours (last: %1). Check the token matches the one in your dashboard and that the monitor is enabled.', $block->ago($block->getLastSeen())));
+                    echo $escaper->escapeHtml(__('The connector is on, but MageSentinel has not read this store for 3 hours (last: %1). Check the token matches the one in your dashboard and that the monitor is enabled.', $block->ago($block->getLastSeen())));
                 } else {
-                    echo $e(__('The free checks above read the store from the inside. MageSentinel adds the outside: a real browser buys from your store every 30 minutes and tells you which step broke, with a screenshot. 14 days free, no card.'));
+                    echo $escaper->escapeHtml(__('The free checks above read the store from the inside. MageSentinel adds the outside: a real browser buys from your store every 30 minutes and tells you which step broke, with a screenshot. 14 days free, no card.'));
                 }
-            ?> <a href="<?= $block->escapeUrl($block->getSettingsUrl()) ?>"><?= $e(__('Settings')) ?> →</a></p>
+            ?> <a href="<?= $block->escapeUrl($block->getSettingsUrl()) ?>"><?= $escaper->escapeHtml(__('Settings')) ?> →</a></p>
         </div>
     </section>
 </div>

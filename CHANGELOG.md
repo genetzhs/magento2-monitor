@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.1 – 2026-10-15
+
+- Passes the Magento 2 coding standard with no errors (needed for the Adobe Commerce Marketplace): every template value
+  is escaped through `$escaper`, and file and network reads no longer use the `@` operator.
+
 ## 2.0.0 – 2026-10-15
 
 - **MageSentinel menu** sits right under Dashboard, with its coloured logo.
