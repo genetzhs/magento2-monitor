@@ -255,3 +255,5 @@ Last check-in %1,Τελευταίος έλεγχος %1
 "Match my system","Όπως το σύστημα"
 "Light","Φωτεινό"
 "Dark","Σκούρο"
+"Free plan: connector inactive","Πλάνο Free: ο connector είναι ανενεργός"
+"MageSentinel still checks your checkout once a day, without test orders or store diagnostics. The module can stay installed. Choose a plan for checks every 30 minutes.","Το MageSentinel συνεχίζει να ελέγχει το checkout μία φορά τη μέρα, χωρίς δοκιμαστικές παραγγελίες και διαγνωστικά του καταστήματος. Το module μπορεί να μείνει εγκατεστημένο. Επιλέξτε πλάνο για ελέγχους κάθε 30 λεπτά."

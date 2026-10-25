@@ -10,9 +10,10 @@ use Magento\Framework\Math\Random;
 use Magento\Store\Model\StoreManagerInterface;
 
 /**
- * Talks to magesentinel.com, and only when an administrator presses a button:
- * "Test cart & checkout" on a connected store, or the free monthly test on one
- * that is not. The store is identified by its base URL and a SHA-256 hash of
+ * Talks to magesentinel.com, and only when an administrator acts: pressing
+ * "Test cart & checkout" on a connected store or the free monthly test on one
+ * that is not, or opening the health page of a connected store (its checkout
+ * speed and, at most hourly, the MageSentinel plan the store is on). The store is identified by its base URL and a SHA-256 hash of
  * its connector token; the token itself never leaves the store.
  */
 class Service
@@ -77,6 +78,22 @@ class Service
     public function checkStatus(string $jobId): array
     {
         return $this->connector('GET', '/' . rawurlencode($jobId));
+    }
+
+    /**
+     * The plan the store's MageSentinel workspace is on. On Free the connector
+     * is not called any more, so "not checking in" is expected, not a fault.
+     *
+     * @return array{plan?:string, active?:bool, connector?:bool}|null
+     */
+    public function planStatus(): ?array
+    {
+        $r = $this->request('GET', '/api/connector/status', [
+            'X-MageSentinel-Key' => hash('sha256', $this->token()),
+            'X-MageSentinel-Site' => $this->site(),
+        ]);
+        $data = is_array($r['body']) ? ($r['body']['data'] ?? null) : null;
+        return $r['code'] === 200 && is_array($data) ? $data : null;
     }
 
     /** @return array{code:int, body:mixed} */

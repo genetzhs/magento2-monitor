@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.4 – 2026-10-25
+
+- **Free plan:** a connected store whose MageSentinel workspace is on the Free plan shows "Free plan: connector
+  inactive" instead of "Set up, not checking in". Free keeps a daily checkout check without test orders or store
+  diagnostics, so the module can stay installed. The plan is read when an admin opens Store health, at most hourly.
+
 ## 2.0.3 – 2026-10-16
 
 - **Test purchase:** the step that is running shows no clock any more. Progress can arrive late, and the counter

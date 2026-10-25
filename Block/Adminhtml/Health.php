@@ -88,9 +88,23 @@ class Health extends Template
         return $this->getUrl($path, $params);
     }
 
+    /** off, quiet, on, or free: connected, but the Free plan does not use the connector. */
     public function getConnection(): string
     {
-        return $this->service->connection();
+        $conn = $this->service->connection();
+        if ($conn === 'off') {
+            return $conn;
+        }
+        $key = 'magesentinel_plan_status';
+        $cached = $this->_cache->load($key);
+        $plan = is_string($cached) && $cached !== '' ? json_decode($cached, true) : null;
+        if (!is_array($plan)) {
+            $plan = $this->service->planStatus();
+            if ($plan !== null) {
+                $this->_cache->save((string)json_encode($plan), $key, [], 3600);
+            }
+        }
+        return is_array($plan) && array_key_exists('connector', $plan) && !$plan['connector'] ? 'free' : $conn;
     }
 
     public function getLastSeen(): int

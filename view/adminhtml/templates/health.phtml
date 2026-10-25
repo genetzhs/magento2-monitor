@@ -40,7 +40,7 @@ if ($speedMs) {
 $speedScale = max(20000, $speedMs ? (int)(ceil(max($speedMs) / 10000) * 10000) : 20000);
 $lastSpeed = $speed ? end($speed) : null;
 $hdays = $block->getHealthDays();
-$pill = ['on' => ['good', __('Monitored by MageSentinel')], 'quiet' => ['watch', __('Set up, not checking in')], 'off' => ['off', __('Not connected')]][$conn];
+$pill = ['on' => ['good', __('Monitored by MageSentinel')], 'quiet' => ['watch', __('Set up, not checking in')], 'free' => ['watch', __('Free plan: connector inactive')], 'off' => ['off', __('Not connected')]][$conn];
 $freeUsed = $conn === 'off' && !empty($free['next']) && (int)$free['next'] > time();
 ?>
 <div class="ms-app ms-page" data-ms-theme="auto" data-mage-init='<?= $block->escapeHtmlAttr((string)json_encode(['MageSentinel_Monitor/js/health' => $block->getJsConfig()])) ?>'>
@@ -209,7 +209,7 @@ $freeUsed = $conn === 'off' && !empty($free['next']) && (int)$free['next'] > tim
             <p class="ms-note"><?= $escaper->escapeHtml(__('The health checks run every 15 minutes on this store; each day keeps its worst result.')) ?></p>
         </div>
         <div class="ms-card ms-appear" style="--d:12">
-            <div class="ms-head"><h2><?= $escaper->escapeHtml(__('Alerts')) ?></h2><?php if ($conn === 'on'): ?><span class="ms-chip ms-good"><?= $escaper->escapeHtml(__('Connected')) ?></span><?php elseif ($conn === 'quiet'): ?><span class="ms-chip ms-watch"><?= $escaper->escapeHtml(__('Set up, not checking in')) ?></span><?php endif; ?></div>
+            <div class="ms-head"><h2><?= $escaper->escapeHtml(__('Alerts')) ?></h2><?php if ($conn === 'on'): ?><span class="ms-chip ms-good"><?= $escaper->escapeHtml(__('Connected')) ?></span><?php elseif ($conn === 'quiet'): ?><span class="ms-chip ms-watch"><?= $escaper->escapeHtml(__('Set up, not checking in')) ?></span><?php elseif ($conn === 'free'): ?><span class="ms-chip ms-watch"><?= $escaper->escapeHtml(__('Free plan: connector inactive')) ?></span><?php endif; ?></div>
             <dl class="ms-facts">
                 <div><dt><?= $escaper->escapeHtml(__('Health emails')) ?></dt><dd><?php if (!$block->getAlertsEnabled()): ?><span class="ms-chip"><?= $escaper->escapeHtml(__('Off')) ?></span><?php elseif ($block->getAlertsPaused()): ?><span class="ms-chip"><?= $escaper->escapeHtml(__('Paused')) ?></span><?php else: ?><span class="ms-chip ms-good"><?= $escaper->escapeHtml(__('On')) ?></span><?php endif; ?></dd></div>
                 <div><dt><?= $escaper->escapeHtml(__('Sent to')) ?></dt><dd><?= $escaper->escapeHtml($block->getRecipient() ?: '—') ?></dd></div>
@@ -219,6 +219,8 @@ $freeUsed = $conn === 'off' && !empty($free['next']) && (int)$free['next'] > tim
             <p class="ms-note"><?php
                 if ($conn === 'on') {
                     echo $escaper->escapeHtml(__('MageSentinel buys from your store on a schedule and alerts you by email or Slack when a step breaks, so the health emails pause.'));
+                } elseif ($conn === 'free') {
+                    echo $escaper->escapeHtml(__('MageSentinel still checks your checkout once a day, without test orders or store diagnostics. The module can stay installed. Choose a plan for checks every 30 minutes.'));
                 } elseif ($conn === 'quiet') {
                     echo $escaper->escapeHtml(__('The connector is on, but MageSentinel has not read this store for 3 hours (last: %1). Check the token matches the one in your dashboard and that the monitor is enabled.', $block->ago($block->getLastSeen())));
                 } else {
