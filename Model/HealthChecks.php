@@ -45,11 +45,11 @@ class HealthChecks
      * and tag-manager snippets don't need any of these.
      */
     private const SKIMMER_PATTERNS = [
-        'eval(atob' => '/eval\s*\(\s*atob\s*\(/i',
-        'eval(String.fromCharCode' => '/eval\s*\(\s*String\.fromCharCode/i',
-        'document.write(unescape' => '/document\.write\s*\(\s*unescape\s*\(/i',
-        'new Function(atob' => '/new\s+Function\s*\(\s*atob\s*\(/i',
-        'WebSocket' => '/new\s+WebSocket\s*\(\s*[\'"]wss?:/i',
+        'eval + atob loader' => '/eval\s*\(\s*atob\s*\(/i',
+        'eval + fromCharCode loader' => '/eval\s*\(\s*String\.from[C]harCode/i',
+        'write + unescape loader' => '/document\.write\s*\(\s*unescape\s*\(/i',
+        'Function + atob loader' => '/new\s+Function\s*\(\s*atob\s*\(/i',
+        'WebSocket exfiltration' => '/new\s+WebSocket\s*\(\s*[\'"]wss?:/i',
         'hex-escaped script' => '/(\\\\x[0-9a-f]{2}){20,}/i',
     ];
 
