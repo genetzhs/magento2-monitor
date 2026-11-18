@@ -17,4 +17,14 @@
         <plugin name="magesentinel_skip_captcha"
                 type="MageSentinel\Monitor\Plugin\SkipCaptchaForTrustedCheck"/>
     </type>
+    <!-- The hidden test payment method: visible only to MageSentinel's own checks (token + opt-in). -->
+    <type name="Magento\Payment\Model\MethodList">
+        <plugin name="magesentinel_test_method_list" type="MageSentinel\Monitor\Plugin\TestMethodAvailability"/>
+    </type>
+    <type name="MageSentinel\Monitor\Model\Payment\TestMethod">
+        <plugin name="magesentinel_test_method_available" type="MageSentinel\Monitor\Plugin\TestMethodAvailability"/>
+    </type>
+    <type name="Magento\Sales\Model\ResourceModel\Order\Grid\Collection">
+        <plugin name="magesentinel_hide_test_orders" type="MageSentinel\Monitor\Plugin\HideTestOrdersFromGrid"/>
+    </type>
 </config>

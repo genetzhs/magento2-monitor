@@ -187,9 +187,11 @@ define([], function () {
         var st = li.className.replace(/.*ms-f-/, '');
         var old = li.querySelector('.ms-flow-slowest'); if (old) old.remove();
         if ((st === 'passed' || st === 'failed') && took[i]) { timed.push({ i: i, ms: took[i], failed: st === 'failed' }); sum += took[i]; }
+        // The running step grows live in the bar (no number on it: progress can arrive late).
+        else if (st === 'running' && begun[i]) { var live = Math.max(0, Date.now() - begun[i]); timed.push({ i: i, ms: live, running: true }); sum += live; }
       });
       if (!splitBox) return;
-      if (!timed.length) { splitBox.hidden = true; return; }
+      if (!timed.length || (timed.length === 1 && timed[0].running && timed[0].ms < 300)) { splitBox.hidden = true; return; }
       var slow = null;
       var done = timed.filter(function (x) { return !x.running; });
       if (done.length > 1) done.forEach(function (x) { if (!slow || x.ms > slow.ms) slow = x; });
@@ -202,16 +204,27 @@ define([], function () {
       splitBox.hidden = false;
       splitBox.querySelector('[data-ms-split-hint]').textContent =
         (slow ? L._share.replace('{step}', label(slow.i)).replace('{share}', Math.round(slow.ms / sum * 100)) + ' · ' : '') + secs(sum);
+      // Segments are kept per step and only resized, so widths glide instead of jumping.
       var track = splitBox.querySelector('[data-ms-split-bar]');
-      track.textContent = '';
+      var keep = {};
       timed.forEach(function (x) {
-        var seg = document.createElement('span');
+        keep[x.i] = true;
+        var seg = track.querySelector('[data-step="' + x.i + '"]');
+        if (!seg) {
+          seg = document.createElement('span');
+          seg.setAttribute('data-step', x.i);
+          seg.style.flexGrow = 0;
+          track.appendChild(seg);
+          seg.getBoundingClientRect();
+        }
         seg.className = 'ms-split-seg' + (x.failed ? ' ms-failed' : '') + (x.running ? ' ms-running' : '');
         seg.style.flexGrow = x.ms;
-        if (!x.failed) seg.style.background = COLORS[x.i % COLORS.length];
-        seg.title = label(x.i) + ': ' + secs(x.ms);
-        if (x.ms / sum > 0.12) seg.textContent = label(x.i) + ' ' + secs(x.ms);
-        track.appendChild(seg);
+        seg.style.backgroundColor = x.failed ? '' : COLORS[x.i % COLORS.length];
+        seg.title = label(x.i) + (x.running ? '' : ': ' + secs(x.ms));
+        seg.textContent = x.ms / sum > 0.12 ? label(x.i) + (x.running ? '' : ' ' + secs(x.ms)) : '';
+      });
+      Array.prototype.forEach.call(track.querySelectorAll('[data-step]'), function (seg) {
+        if (!keep[seg.getAttribute('data-step')]) seg.remove();
       });
     }
     var label = btn.querySelector('span'), idle = label.textContent;
@@ -268,8 +281,8 @@ define([], function () {
       var oldCta = box.querySelector('[data-ms-cta]');
       if (oldCta) oldCta.remove();
       clearInterval(tick);
-      tick = setInterval(function () { if (last && last.phase === 'running') paint(last); }, 500);
-      if (splitBox) splitBox.hidden = true;
+      tick = setInterval(function () { if (last && last.phase === 'running') paint(last); }, 250);
+      if (splitBox) { splitBox.hidden = true; splitBox.querySelector('[data-ms-split-bar]').textContent = ''; }
       var preview = app.querySelector('[data-ms-preview]');
       if (preview) preview.hidden = true;
       say(L._start);

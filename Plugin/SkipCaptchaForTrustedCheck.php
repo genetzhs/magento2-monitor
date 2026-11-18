@@ -23,16 +23,25 @@ class SkipCaptchaForTrustedCheck
     /** @var Access */
     private $access;
 
+    /**
+     * Constructor.
+     *
+     * @param Access $access
+     */
     public function __construct(Access $access)
     {
         $this->access = $access;
     }
 
     /**
-     * Magento\ReCaptchaUi\Model\IsCaptchaEnabledInterface::isCaptchaEnabledFor()
-     * — decides both whether the widget renders and whether a submit is verified.
+     * After is captcha enabled for.
+     *
+     * Magento\ReCaptchaUi\Model\IsCaptchaEnabledInterface::isCaptchaEnabledFor() — decides both whether the
+     * widget renders and whether a submit is verified.
      *
      * @param object $subject
+     * @param bool $result
+     * @return bool
      */
     public function afterIsCaptchaEnabledFor($subject, bool $result): bool
     {
@@ -40,8 +49,10 @@ class SkipCaptchaForTrustedCheck
     }
 
     /**
-     * Magento\Captcha\Model\DefaultModel::isRequired() — every image-CAPTCHA
-     * form checks this before it asks for, or verifies, the typed word.
+     * Turn the CAPTCHA off for MageSentinel's own checks.
+     *
+     * Magento\Captcha\Model\DefaultModel::isRequired() — every image-CAPTCHA form checks this before it asks
+     * for, or verifies, the typed word.
      *
      * @param object $subject
      * @param bool|mixed $result

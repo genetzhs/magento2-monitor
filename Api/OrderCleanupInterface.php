@@ -23,4 +23,16 @@ interface OrderCleanupInterface
      * @return mixed[]
      */
     public function cancel(string $incrementId): array;
+
+    /**
+     * Cancels (never deletes) an order placed with the hidden test payment method.
+     *
+     * Only with the token and the owner's "Test orders through a hidden payment
+     * method" switch; every lock is checked against the loaded order. Any other
+     * order answers 409 and is left untouched.
+     *
+     * @param string $incrementId
+     * @return mixed[]
+     */
+    public function cancelTest(string $incrementId): array;
 }

@@ -8,5 +8,11 @@
         <job name="magesentinel_weekly_summary" instance="MageSentinel\Monitor\Cron\Weekly" method="execute">
             <schedule>7 * * * *</schedule>
         </job>
+        <job name="magesentinel_sweep_test_orders" instance="MageSentinel\Monitor\Cron\SweepTestOrders" method="execute">
+            <schedule>*/15 * * * *</schedule>
+        </job>
+        <job name="magesentinel_deploy_watch" instance="MageSentinel\Monitor\Cron\DeployWatch" method="execute">
+            <schedule>*/5 * * * *</schedule>
+        </job>
     </group>
 </config>

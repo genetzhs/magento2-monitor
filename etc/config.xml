@@ -15,7 +15,21 @@
                 <allow_cancel>0</allow_cancel>
                 <!-- Serve MageSentinel's own checks without the CAPTCHA. Off unless asked for. -->
                 <allow_captcha_skip>0</allow_captcha_skip>
+                <!-- The hidden test payment method for card-only stores. Off unless asked for. -->
+                <allow_test_gateway>0</allow_test_gateway>
             </monitor>
         </magesentinel>
+        <payment>
+            <!-- active = 0 on purpose: absent from every list. Plugin\TestMethodAvailability turns it on only
+                 inside a request carrying this store's token, with allow_test_gateway on. -->
+            <magesentinel_test>
+                <active>0</active>
+                <model>MageSentinel\Monitor\Model\Payment\TestMethod</model>
+                <title>MageSentinel test order</title>
+                <order_status>pending</order_status>
+                <allowspecific>0</allowspecific>
+                <group>offline</group>
+            </magesentinel_test>
+        </payment>
     </default>
 </config>

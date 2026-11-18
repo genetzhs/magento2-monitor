@@ -25,6 +25,13 @@ class Mailer
     /** @var Escaper */
     private $escaper;
 
+    /**
+     * Constructor.
+     *
+     * @param TransportBuilder $transportBuilder
+     * @param ScopeConfigInterface $config
+     * @param Escaper $escaper
+     */
     public function __construct(TransportBuilder $transportBuilder, ScopeConfigInterface $config, Escaper $escaper)
     {
         $this->transportBuilder = $transportBuilder;
@@ -32,6 +39,11 @@ class Mailer
         $this->escaper = $escaper;
     }
 
+    /**
+     * Who gets the health emails.
+     *
+     * @return string
+     */
     public function recipient(): string
     {
         $email = trim((string)$this->config->getValue('magesentinel/alerts/email'));
@@ -39,7 +51,14 @@ class Mailer
     }
 
     /**
-     * @param array<int, array{label:string, detail:string, state:string}> $rows
+     * Email health rows to the recipient.
+     *
+     * @param string $subject
+     * @param string $heading
+     * @param string $intro
+     * @param array $rows
+     * @param string $footer
+     * @return bool
      */
     public function send(string $subject, string $heading, string $intro, array $rows, string $footer): bool
     {
@@ -51,7 +70,8 @@ class Mailer
         $html = '';
         foreach ($rows as $row) {
             $html .= '<tr><td style="padding:10px 0;border-top:1px solid #e6e8ee;vertical-align:top;width:14px">'
-                . '<span style="display:inline-block;width:10px;height:10px;border-radius:5px;margin-top:5px;background:'
+                . '<span style="display:inline-block;width:10px;height:10px;border-radius:5px;'
+                . 'margin-top:5px;background:'
                 . ($colors[$row['state']] ?? $colors['unknown']) . '"></span></td>'
                 . '<td style="padding:10px 0 10px 10px;border-top:1px solid #e6e8ee"><strong>'
                 . $this->escaper->escapeHtml($row['label']) . '</strong><br><span style="color:#4a4f5c">'

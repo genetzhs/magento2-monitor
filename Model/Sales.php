@@ -23,18 +23,34 @@ class Sales
     /** @var array<string, array<string, float>>|null */
     private $hours;
 
+    /**
+     * Constructor.
+     *
+     * @param ResourceConnection $resource
+     * @param TimezoneInterface $timezone
+     */
     public function __construct(ResourceConnection $resource, TimezoneInterface $timezone)
     {
         $this->resource = $resource;
         $this->timezone = $timezone;
     }
 
+    /**
+     * The store's time zone.
+     *
+     * @return \DateTimeZone
+     */
     public function zone(): \DateTimeZone
     {
         return new \DateTimeZone((string)$this->timezone->getConfigTimezone() ?: 'UTC');
     }
 
-    /** Store-local date (Y-m-d) of a timestamp. */
+    /**
+     *  Store-local date (Y-m-d) of a timestamp.
+     *
+     * @param int $ts
+     * @return string
+     */
     public function day(int $ts): string
     {
         return (new \DateTime('@' . $ts))->setTimezone($this->zone())->format('Y-m-d');
@@ -72,7 +88,14 @@ class Sales
         return $this->hours;
     }
 
-    /** Sum a field over the UTC hours in [from, to). */
+    /**
+     *  Sum a field over the UTC hours in [from, to).
+     *
+     * @param string $field
+     * @param int $from
+     * @param int $to
+     * @return float
+     */
     private function sum(string $field, int $from, int $to): float
     {
         $total = 0.0;
@@ -85,7 +108,11 @@ class Sales
         return $total;
     }
 
-    /** @return array{orders:int, last_week:int, revenue:float, paid:int, failed:int, pending:int} */
+    /**
+     * Orders and revenue in the last 24 hours, against the same hours last week.
+     *
+     * @return array{orders:int, last_week:int, revenue:float, paid:int, failed:int, pending:int}
+     */
     public function last24h(): array
     {
         $to = (int)(floor(time() / 3600) + 1) * 3600;
@@ -100,7 +127,11 @@ class Sales
         ];
     }
 
-    /** @return array<int, array{day:string, count:int, revenue:float}> 14 store days, oldest first, today last */
+    /**
+     * Orders per store day.
+     *
+     * @return array<int, array{day:string, count:int, revenue:float}> 14 store days, oldest first, today last
+     */
     private function days(): array
     {
         $out = [];
@@ -119,7 +150,11 @@ class Sales
         return array_values($out);
     }
 
-    /** @return array<int, array{day:string, count:int, revenue:float, last:int}> last = same weekday a week earlier */
+    /**
+     * Orders per day for the last 7 days, with the week before.
+     *
+     * @return array<int, array{day:string, count:int, revenue:float, last:int}> last = same weekday a week earlier
+     */
     public function week(): array
     {
         $d = $this->days();
@@ -130,7 +165,11 @@ class Sales
         return $out;
     }
 
-    /** @return array{days:array<int,string>, this:array<int,float>, last:array<int,float>} */
+    /**
+     * Revenue per day, this week and last.
+     *
+     * @return array{days:array<int,string>, this:array<int,float>, last:array<int,float>}
+     */
     public function revenueWeeks(): array
     {
         $d = $this->days();
@@ -141,7 +180,11 @@ class Sales
         ];
     }
 
-    /** @return array<int, array{short:string, label:string, count:int}> the last 24 hours, oldest first */
+    /**
+     * Orders per hour over the last 24 hours.
+     *
+     * @return array<int, array{short:string, label:string, count:int}> the last 24 hours, oldest first
+     */
     public function hourSlots(): array
     {
         $hours = $this->hours();
@@ -152,12 +195,20 @@ class Sales
             $ts = $now - $i * 3600;
             $start = (new \DateTime('@' . $ts))->setTimezone($zone)->format('H:00');
             $end = (new \DateTime('@' . ($ts + 3600)))->setTimezone($zone)->format('H:00');
-            $slots[] = ['short' => $start, 'label' => $start . '–' . $end, 'count' => (int)($hours[gmdate('Y-m-d H:00:00', $ts)]['orders'] ?? 0)];
+            $slots[] = [
+                'short' => $start,
+                'label' => $start . '–' . $end,
+                'count' => (int)($hours[gmdate('Y-m-d H:00:00', $ts)]['orders'] ?? 0),
+            ];
         }
         return $slots;
     }
 
-    /** @return array{count:int, cancelled:int, last:int} MageSentinel test orders, last 7 days */
+    /**
+     * MageSentinel's own test orders in the last 24 hours.
+     *
+     * @return array{count:int, cancelled:int, last:int} MageSentinel test orders, last 7 days
+     */
     public function tests(): array
     {
         $c = $this->resource->getConnection();

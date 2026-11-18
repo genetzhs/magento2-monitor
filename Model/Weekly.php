@@ -33,6 +33,18 @@ class Weekly
     /** @var CurrencyFactory */
     private $currencyFactory;
 
+    /**
+     * Constructor.
+     *
+     * @param ScopeConfigInterface $config
+     * @param ResourceConnection $resource
+     * @param TimezoneInterface $timezone
+     * @param State $state
+     * @param Mailer $mailer
+     * @param HealthChecks $checks
+     * @param Service $service
+     * @param CurrencyFactory $currencyFactory
+     */
     public function __construct(
         ScopeConfigInterface $config,
         ResourceConnection $resource,
@@ -53,7 +65,11 @@ class Weekly
         $this->currencyFactory = $currencyFactory;
     }
 
-    /** Called hourly; sends once, on Monday from 08:00 store time. */
+    /**
+     *  Called hourly; sends once, on Monday from 08:00 store time.
+     *
+     * @return void
+     */
     public function maybeSend(): void
     {
         if (!$this->config->isSetFlag('magesentinel/alerts/weekly')) {
@@ -72,6 +88,11 @@ class Weekly
         }
     }
 
+    /**
+     * Send last week's summary now; true when the mail went out.
+     *
+     * @return bool
+     */
     public function send(): bool
     {
         $now = time();
@@ -80,7 +101,8 @@ class Weekly
         $money = function (float $v): string {
             try {
                 $code = (string)$this->config->getValue('currency/options/base');
-                return $this->currencyFactory->create()->load($code)->formatTxt($v, ['display' => \Magento\Framework\Currency\Data\Currency::NO_SYMBOL]) . ' ' . $code;
+                $options = ['display' => \Magento\Framework\Currency\Data\Currency::NO_SYMBOL];
+                return $this->currencyFactory->create()->load($code)->formatTxt($v, $options) . ' ' . $code;
             } catch (\Throwable $e) {
                 return number_format($v, 2);
             }
@@ -93,27 +115,59 @@ class Weekly
             return ' (' . ($p >= 0 ? '+' : '') . $p . '%)';
         };
         $rows = [
-            ['label' => (string)__('Orders'), 'detail' => (string)__('%1, week before %2', $cur['orders'] . $delta($cur['orders'], $prev['orders']), $prev['orders']), 'state' => 'ok'],
-            ['label' => (string)__('Revenue'), 'detail' => (string)__('%1, week before %2', $money($cur['revenue']) . $delta($cur['revenue'], $prev['revenue']), $money($prev['revenue'])), 'state' => 'ok'],
-            ['label' => (string)__('Average order'), 'detail' => (string)__('%1, week before %2', $money($cur['aov']), $money($prev['aov'])), 'state' => 'ok'],
-            ['label' => (string)__('Cancelled or unpaid'), 'detail' => (string)__('%1, week before %2', $cur['failed'], $prev['failed']), 'state' => $cur['failed'] > max(3, 2 * $prev['failed']) ? 'watch' : 'ok'],
+            [
+                'label' => (string)__('Orders'),
+                'detail' => (string)__(
+                    '%1, week before %2',
+                    $cur['orders'] . $delta($cur['orders'], $prev['orders']),
+                    $prev['orders']
+                ),
+                'state' => 'ok',
+            ],
+            [
+                'label' => (string)__('Revenue'),
+                'detail' => (string)__(
+                    '%1, week before %2',
+                    $money($cur['revenue']) . $delta($cur['revenue'], $prev['revenue']),
+                    $money($prev['revenue'])
+                ),
+                'state' => 'ok',
+            ],
+            [
+                'label' => (string)__('Average order'),
+                'detail' => (string)__('%1, week before %2', $money($cur['aov']), $money($prev['aov'])),
+                'state' => 'ok',
+            ],
+            [
+                'label' => (string)__('Cancelled or unpaid'),
+                'detail' => (string)__('%1, week before %2', $cur['failed'], $prev['failed']),
+                'state' => $cur['failed'] > max(3, 2 * $prev['failed']) ? 'watch' : 'ok',
+            ],
         ];
         foreach ($this->checks->rows() as $row) {
             if ($row['state'] !== HealthChecks::OK) {
                 $rows[] = $row;
             }
         }
+        // phpcs:ignore Magento2.Functions.DiscouragedFunction -- string parsing only, no I/O
         $host = (string)parse_url($this->service->site(), PHP_URL_HOST);
         return $this->mailer->send(
             (string)__('[%1] Your week: %2 orders', $host, $cur['orders']),
             (string)__('Last week on %1', $host),
+            // phpcs:ignore Generic.Files.LineLength -- one translatable sentence
             (string)__('The last 7 days against the 7 before, from your own orders. Health checks that need a look are listed after the figures.'),
             $rows,
             (string)__('Switch this summary off under Stores > Configuration > MageSentinel.')
         );
     }
 
-    /** @return array{orders:int, revenue:float, aov:float, failed:int} */
+    /**
+     * Order counts and revenue between two dates.
+     *
+     * @param int $from
+     * @param int $to
+     * @return array{orders:int, revenue:float, aov:float, failed:int}
+     */
     private function stats(int $from, int $to): array
     {
         $c = $this->resource->getConnection();
@@ -121,8 +175,10 @@ class Weekly
         $row = $c->fetchRow(
             $c->select()->from($table, [
                 'orders' => 'COUNT(*)',
-                'revenue' => "SUM(CASE WHEN state NOT IN ('canceled','pending_payment','payment_review') THEN base_grand_total ELSE 0 END)",
-                'paid' => "SUM(CASE WHEN state NOT IN ('canceled','pending_payment','payment_review') THEN 1 ELSE 0 END)",
+                'revenue' => "SUM(CASE WHEN state NOT IN ('canceled','pending_payment','payment_review')"
+                    . " THEN base_grand_total ELSE 0 END)",
+                'paid' => "SUM(CASE WHEN state NOT IN ('canceled','pending_payment','payment_review')"
+                    . " THEN 1 ELSE 0 END)",
                 'failed' => "SUM(CASE WHEN state IN ('canceled','pending_payment','payment_review') THEN 1 ELSE 0 END)",
             ])
                 ->where('created_at > ?', gmdate('Y-m-d H:i:s', $from))

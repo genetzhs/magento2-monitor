@@ -3,7 +3,7 @@
 Checkout health for your Magento 2 store, in two parts. The first is free and needs no account.
 
 Made by [MageSentinel](https://magesentinel.com/?utm_source=github&utm_medium=readme), real-browser checkout monitoring for
-Magento 2 and WooCommerce. Our [data from 55,000 test purchases](https://magesentinel.com/blog/checkout-failure-report-2026)
+Magento 2 and WooCommerce. Our [data from 98,000 test purchases](https://magesentinel.com/blog/checkout-failure-report-2026)
 shows 77% of checkout failures happen while the store is up, so uptime monitoring never sees them.
 
 | | Free, no account | With a MageSentinel account |
@@ -31,6 +31,15 @@ stop a Magento store from taking money, each with a link to the screen that fixe
 - the HTTPS certificate close to expiry
 - developer mode on a live store
 - low disk space
+- order confirmation emails that were never sent
+- Redis (cache, page cache, sessions) and OpenSearch/Elasticsearch not answering
+- card-skimmer loaders injected into CMS blocks, pages or the design head/footer (named by place, never printed)
+- PHP files among the uploads in `pub/media` (almost always a web shell)
+- the admin still at `/admin`, the first address bots try
+
+The checks are grouped in three cards (taking orders, security, platform), problems first. **Health over 7 days** shows
+every hour of the last week as a square, so you can see when something went wrong and which check it was. **Checkout
+speed** charts your last 30 test purchases against their median and marks the slow ones.
 
 **Email alerts, every 15 minutes.** The same checks run through Magento's cron. When one turns red you get an email naming
 the problem, and another when it is fixed. One email per problem, not one per run. Sent through your store's own mail.
@@ -52,18 +61,30 @@ active payment and shipping methods, cron and indexer state, queue depth, order 
 the tail of `exception.log`. It is **off by default**: nothing is exposed until an administrator switches it on and sets a
 token.
 
-Optional, each behind its own switch, both off by default:
+Optional, each behind its own switch, all off by default:
 
 - **Cancel test orders.** MageSentinel cancels the orders its own checks placed: only from a `magesentinel+` address,
   under an hour old, not invoiced, not shipped. Cancels, never deletes.
 - **CAPTCHA exemption.** MageSentinel never solves a CAPTCHA. Requests carrying your token can be served without
   reCAPTCHA or Magento's image CAPTCHA; every other visitor still gets it.
+- **Test orders through a hidden payment method.** For stores that take only cards or PayPal: only MageSentinel's checks
+  (carrying your token) see a payment method that takes no money. The order is cancelled within 30 minutes, stock
+  returns, and it never shows in Sales > Orders.
+
+On a connected store the module also notices a deploy (static content or module versions change) and asks MageSentinel
+for a check right away.
 
 ## Screenshots
 
-| Store health | Test cart & checkout | Settings |
-|---|---|---|
-| ![Store health](docs/screenshot-health.png) | ![Test purchase](docs/screenshot-test.png) | ![Settings](docs/screenshot-settings.png) |
+| Store health | Test purchase, live |
+|---|---|
+| ![Store health](docs/screenshot-health.png) | ![Test purchase](docs/screenshot-test.png) |
+
+| Health checks | Speed, 7-day health, alerts |
+|---|---|
+| ![Health checks](docs/screenshot-checks.png) | ![Trends](docs/screenshot-trends.png) |
+
+![Settings](docs/screenshot-settings.png)
 
 ## Install
 

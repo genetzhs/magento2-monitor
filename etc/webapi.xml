@@ -38,4 +38,16 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+
+    <!--
+        Cancel (never delete) an order placed with the hidden test method. Token,
+        the owner's opt-in, and every lock in Model\TestOrders::refusal() are
+        checked against the loaded order; a real order answers 409.
+    -->
+    <route url="/V1/magesentinel/orders/:incrementId/test-cancel" method="POST">
+        <service class="MageSentinel\Monitor\Api\OrderCleanupInterface" method="cancelTest"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
 </routes>

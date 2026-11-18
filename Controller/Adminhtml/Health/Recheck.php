@@ -15,12 +15,21 @@ class Recheck extends Action implements HttpPostActionInterface
     /** @var Alerts */
     private $alerts;
 
+    /**
+     * Constructor.
+     *
+     * @param Action\Context $context
+     * @param Alerts $alerts
+     */
     public function __construct(Action\Context $context, Alerts $alerts)
     {
         parent::__construct($context);
         $this->alerts = $alerts;
     }
 
+    /**
+     * Run the health checks again and return to the page.
+     */
     public function execute()
     {
         $this->alerts->run();

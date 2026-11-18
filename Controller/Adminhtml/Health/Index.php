@@ -14,12 +14,21 @@ class Index extends Action implements HttpGetActionInterface
     /** @var PageFactory */
     private $pageFactory;
 
+    /**
+     * Constructor.
+     *
+     * @param Action\Context $context
+     * @param PageFactory $pageFactory
+     */
     public function __construct(Action\Context $context, PageFactory $pageFactory)
     {
         parent::__construct($context);
         $this->pageFactory = $pageFactory;
     }
 
+    /**
+     * Show the Store health page.
+     */
     public function execute()
     {
         $page = $this->pageFactory->create();

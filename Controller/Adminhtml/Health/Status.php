@@ -24,14 +24,29 @@ class Status extends Action implements HttpGetActionInterface
     /** @var ResolverInterface */
     private $locale;
 
-    public function __construct(Action\Context $context, JsonFactory $jsonFactory, Service $service, ResolverInterface $locale)
-    {
+    /**
+     * Constructor.
+     *
+     * @param Action\Context $context
+     * @param JsonFactory $jsonFactory
+     * @param Service $service
+     * @param ResolverInterface $locale
+     */
+    public function __construct(
+        Action\Context $context,
+        JsonFactory $jsonFactory,
+        Service $service,
+        ResolverInterface $locale
+    ) {
         parent::__construct($context);
         $this->jsonFactory = $jsonFactory;
         $this->service = $service;
         $this->locale = $locale;
     }
 
+    /**
+     * Progress of the running test purchase.
+     */
     public function execute()
     {
         $json = $this->jsonFactory->create();
@@ -48,7 +63,12 @@ class Status extends Action implements HttpGetActionInterface
         return $json->setData(['ok' => true] + (array)$r['body']['data']);
     }
 
-    /** @return array<string, mixed>|null */
+    /**
+     * Progress of a free test purchase.
+     *
+     * @param string $id
+     * @return array<string, mixed>|null
+     */
     private function audit(string $id): ?array
     {
         $r = $this->service->freeTestStatus($id);
@@ -56,7 +76,8 @@ class Status extends Action implements HttpGetActionInterface
         if (!is_array($d)) {
             return null;
         }
-        $state = ['queued' => 'waiting', 'running' => 'active', 'done' => 'completed', 'error' => 'failed'][$d['status'] ?? ''] ?? 'waiting';
+        $states = ['queued' => 'waiting', 'running' => 'active', 'done' => 'completed', 'error' => 'failed'];
+        $state = $states[$d['status'] ?? ''] ?? 'waiting';
         $map = ['passed' => 'passed', 'failed' => 'failed', 'skipped' => 'skipped'];
         $progress = null;
         $result = null;
@@ -84,7 +105,11 @@ class Status extends Action implements HttpGetActionInterface
                 return (string)$x['name'];
             }, $steps);
             if ($names) {
-                $progress = ['step' => end($names), 'index' => count($names) - 1, 'total' => count($names), 'phase' => 'done',
+                $progress = [
+                    'step' => end($names),
+                    'index' => count($names) - 1,
+                    'total' => count($names),
+                    'phase' => 'done',
                     'statuses' => array_map(static function ($x) use ($map) {
                         return $map[$x['status'] ?? ''] ?? 'pending';
                     }, $steps),

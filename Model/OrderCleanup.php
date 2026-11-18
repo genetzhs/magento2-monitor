@@ -49,14 +49,28 @@ class OrderCleanup implements OrderCleanupInterface
     private $searchCriteriaBuilder;
     /** @var LoggerInterface */
     private $logger;
+    /** @var TestOrders */
+    private $testOrders;
 
+    /**
+     * Constructor.
+     *
+     * @param Access $access
+     * @param OrderRepositoryInterface $orderRepository
+     * @param OrderManagementInterface $orderManagement
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param LoggerInterface $logger
+     * @param TestOrders $testOrders
+     */
     public function __construct(
         Access $access,
         OrderRepositoryInterface $orderRepository,
         OrderManagementInterface $orderManagement,
         SearchCriteriaBuilder $searchCriteriaBuilder,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        TestOrders $testOrders
     ) {
+        $this->testOrders = $testOrders;
         $this->access = $access;
         $this->orderRepository = $orderRepository;
         $this->orderManagement = $orderManagement;
@@ -65,6 +79,8 @@ class OrderCleanup implements OrderCleanupInterface
     }
 
     /**
+     * Cancel a test order MageSentinel placed.
+     *
      * @param string $incrementId
      * @return mixed[]
      */
@@ -109,6 +125,30 @@ class OrderCleanup implements OrderCleanupInterface
     }
 
     /**
+     * Cancel a test order placed with the hidden payment method (never deletes).
+     *
+     * @param string $incrementId
+     * @return mixed[]
+     */
+    public function cancelTest(string $incrementId): array
+    {
+        $this->access->assertAllowed();
+        $this->access->assertTestGatewayAllowed();
+        $order = $this->findOrder($incrementId);
+        if ($order === null || !$this->testOrders->cancel($order)) {
+            throw new \Magento\Framework\Webapi\Exception(
+                new Phrase('not_a_test_order'),
+                0,
+                409
+            );
+        }
+        return ['increment_id' => $incrementId, 'cancelled' => true];
+    }
+
+    /**
+     * Load an order by increment id.
+     *
+     * @param string $incrementId
      * @return OrderInterface|null
      */
     private function findOrder(string $incrementId)
@@ -125,9 +165,13 @@ class OrderCleanup implements OrderCleanupInterface
     }
 
     /**
-     * The two checks that keep this from touching a real customer: the address
-     * has to be one MageSentinel generated, and the order has to be recent enough
-     * to belong to a check that is still running.
+     * Refuse an order MageSentinel did not place.
+     *
+     * The two checks that keep this from touching a real customer: the address has to be one MageSentinel
+     * generated, and the order has to be recent enough to belong to a check that is still running.
+     *
+     * @param OrderInterface $order
+     * @return void
      */
     private function assertIsOurs(OrderInterface $order): void
     {
@@ -145,9 +189,13 @@ class OrderCleanup implements OrderCleanupInterface
     }
 
     /**
-     * Anything already invoiced or shipped has left the checkout and entered
-     * the merchant's accounting and fulfilment. Cancelling it there is not
-     * cleanup, it is interference.
+     * Refuse an order that was invoiced, shipped or is over an hour old.
+     *
+     * Anything already invoiced or shipped has left the checkout and entered the merchant's accounting and
+     * fulfilment. Cancelling it there is not cleanup, it is interference.
+     *
+     * @param OrderInterface $order
+     * @return void
      */
     private function assertUntouched(OrderInterface $order): void
     {

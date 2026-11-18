@@ -56,6 +56,12 @@
                     <comment><![CDATA[Off by default. MageSentinel never solves a CAPTCHA, so a checkout or login that asks for one stops its checks there. Switch this on and requests that carry this store's access token are served without reCAPTCHA or Magento's image CAPTCHA. Every other visitor still gets it.]]></comment>
                     <depends><field id="enabled">1</field></depends>
                 </field>
+                <field id="allow_test_gateway" translate="label comment" type="select" sortOrder="50" showInDefault="1">
+                    <label>Test orders through a hidden payment method</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Off by default. For stores that take only cards or PayPal. MageSentinel's checks (and only they, by this store's access token) see a payment method that takes no money, place a real order with it and cancel it within 30 minutes, with stock restored. Those orders are never deleted and never shown in Sales &gt; Orders. Systems connected to your store (ERP, invoicing, couriers, marketing pixels) may still see the order, then see it cancelled.]]></comment>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
             </group>
         </section>
     </system>

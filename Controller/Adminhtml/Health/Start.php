@@ -32,6 +32,16 @@ class Start extends Action implements HttpPostActionInterface
     /** @var ResolverInterface */
     private $locale;
 
+    /**
+     * Constructor.
+     *
+     * @param Action\Context $context
+     * @param JsonFactory $jsonFactory
+     * @param Service $service
+     * @param State $state
+     * @param Mailer $mailer
+     * @param ResolverInterface $locale
+     */
     public function __construct(
         Action\Context $context,
         JsonFactory $jsonFactory,
@@ -48,6 +58,9 @@ class Start extends Action implements HttpPostActionInterface
         $this->locale = $locale;
     }
 
+    /**
+     * Start a test purchase.
+     */
     public function execute()
     {
         $json = $this->jsonFactory->create();
@@ -63,10 +76,15 @@ class Start extends Action implements HttpPostActionInterface
             409 => __('This store has no active checkout monitor in MageSentinel.'),
             429 => __('A test purchase was just run. Try again in a couple of minutes.'),
         ];
-        return $json->setData(['ok' => false, 'message' => (string)($messages[$r['code']] ?? __('Could not reach MageSentinel. Try again.'))]);
+        $message = $messages[$r['code']] ?? __('Could not reach MageSentinel. Try again.');
+        return $json->setData(['ok' => false, 'message' => (string)$message]);
     }
 
-    /** @return array<string, mixed> */
+    /**
+     * Start this month's free test purchase.
+     *
+     * @return array<string, mixed>
+     */
     private function free(): array
     {
         $r = $this->service->startFreeTest($this->mailer->recipient(), (string)$this->locale->getLocale());
@@ -84,13 +102,18 @@ class Start extends Action implements HttpPostActionInterface
             if (!empty($body['id'])) {
                 $this->state->saveFreeTest(['id' => (string)$body['id'], 'at' => 0, 'next' => $next]);
             }
-            return ['ok' => false, 'message' => (string)__('This month\'s free test has been used. The next one is on %1.', $next ? date('Y-m-d', $next) : '-')];
+            $message = __(
+                'This month\'s free test has been used. The next one is on %1.',
+                $next ? date('Y-m-d', $next) : '-'
+            );
+            return ['ok' => false, 'message' => (string)$message];
         }
         $messages = [
             400 => __('MageSentinel could not use this store address or email. Check the alert email under Settings.'),
             403 => __('MageSentinel could not reach this store from the internet to confirm the request.'),
             429 => __('Too many tests right now. Try again later.'),
         ];
-        return ['ok' => false, 'message' => (string)($messages[$r['code']] ?? __('Could not reach MageSentinel. Try again.'))];
+        $message = $messages[$r['code']] ?? __('Could not reach MageSentinel. Try again.');
+        return ['ok' => false, 'message' => (string)$message];
     }
 }

@@ -14,11 +14,21 @@ class Proof implements ProofInterface
     /** @var State */
     private $state;
 
+    /**
+     * Constructor.
+     *
+     * @param State $state
+     */
     public function __construct(State $state)
     {
         $this->state = $state;
     }
 
+    /**
+     * The free-test challenge, for MageSentinel to confirm the request came from this store.
+     *
+     * @return string
+     */
     public function get(): string
     {
         return $this->state->proof();

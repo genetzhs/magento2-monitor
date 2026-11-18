@@ -11,6 +11,8 @@ use Magento\Framework\App\DeploymentConfig;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\App\State;
+use Magento\Framework\Filesystem\Driver\File;
+use Magento\Framework\HTTP\Client\CurlFactory;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Payment\Model\Config as PaymentConfig;
 use Magento\Shipping\Model\Config as ShippingConfig;
@@ -50,12 +52,34 @@ class Diagnostics implements DiagnosticsInterface
     private $cacheTypeList;
     /** @var \MageSentinel\Monitor\Model\State */
     private $moduleState;
+    /** @var File */
+    private $file;
+    /** @var CurlFactory */
+    private $curlFactory;
 
     /**
      * Most report files we will open in one call. See crashReports().
      */
-    const CRASH_REPORT_LIMIT = 200;
+    private const CRASH_REPORT_LIMIT = 200;
 
+    /**
+     * Constructor.
+     *
+     * @param Access $access
+     * @param ProductMetadataInterface $productMetadata
+     * @param State $appState
+     * @param ModuleListInterface $moduleList
+     * @param ScopeConfigInterface $config
+     * @param PaymentConfig $paymentConfig
+     * @param ShippingConfig $shippingConfig
+     * @param StoreManagerInterface $storeManager
+     * @param ResourceConnection $resource
+     * @param DeploymentConfig $deploymentConfig
+     * @param TypeListInterface $cacheTypeList
+     * @param \MageSentinel\Monitor\Model\State $moduleState
+     * @param File $file
+     * @param CurlFactory $curlFactory
+     */
     public function __construct(
         Access $access,
         ProductMetadataInterface $productMetadata,
@@ -68,7 +92,9 @@ class Diagnostics implements DiagnosticsInterface
         ResourceConnection $resource,
         DeploymentConfig $deploymentConfig,
         TypeListInterface $cacheTypeList,
-        \MageSentinel\Monitor\Model\State $moduleState
+        \MageSentinel\Monitor\Model\State $moduleState,
+        File $file,
+        CurlFactory $curlFactory
     ) {
         $this->access = $access;
         $this->productMetadata = $productMetadata;
@@ -82,11 +108,15 @@ class Diagnostics implements DiagnosticsInterface
         $this->deploymentConfig = $deploymentConfig;
         $this->cacheTypeList = $cacheTypeList;
         $this->moduleState = $moduleState;
+        $this->file = $file;
+        $this->curlFactory = $curlFactory;
     }
 
     /**
-     * New keys are appended, never inserted: Magento serialises an untyped
-     * array return positionally, so the client unpacks this by index.
+     * Everything the connector reports about the store.
+     *
+     * New keys are appended, never inserted: Magento serialises an untyped array return positionally, so the
+     * client unpacks this by index.
      *
      * @param string|null $sku
      * @return mixed[]
@@ -118,6 +148,8 @@ class Diagnostics implements DiagnosticsInterface
             'crash_reports' => $this->crashReports(),
             'search' => $this->search(),
             'page_cache' => $this->pageCache(),
+            // Always last: Magento serialises this as a positional array, and the worker unpacks it by position.
+            'capabilities' => $this->access->isTestGatewayEnabled() ? ['test_gateway'] : [],
         ];
     }
 
@@ -356,11 +388,14 @@ class Diagnostics implements DiagnosticsInterface
     }
 
     /**
-     * One OR-ed LIKE clause. Zend_Db's where() binds a single value, so a
-     * multi-placeholder condition would quietly bind only the first.
+     * One OR-ed LIKE clause.
+     *
+     * Zend_Db's where() binds a single value, so a multi-placeholder condition would quietly bind only the
+     * first.
      *
      * @param \Magento\Framework\DB\Adapter\AdapterInterface $connection
      * @param string[] $prefixes
+     * @return string
      */
     private function pathPrefixes($connection, array $prefixes): string
     {
@@ -372,8 +407,10 @@ class Diagnostics implements DiagnosticsInterface
     }
 
     /**
-     * The handful of whole-store conditions that explain a total failure in one
-     * line, and that are invisible from the outside or easy to misread.
+     * Maintenance flag, caches and indexers.
+     *
+     * The handful of whole-store conditions that explain a total failure in one line, and that are invisible
+     * from the outside or easy to misread.
      *
      * @return mixed[]
      */
@@ -386,7 +423,7 @@ class Diagnostics implements DiagnosticsInterface
             // the flag is the difference between an incident and a planned
             // window.
             'maintenance' => $this->safe(function () use ($root) {
-                return is_file($root . '/var/.maintenance.flag');
+                return $this->file->isFile($root . '/var/.maintenance.flag');
             }, null),
             'invalidated_caches' => $this->safe(function () {
                 $codes = [];
@@ -413,6 +450,8 @@ class Diagnostics implements DiagnosticsInterface
     }
 
     /**
+     * Magento version, edition, mode and third-party modules.
+     *
      * @return mixed[]
      */
     private function magento(): array
@@ -442,8 +481,9 @@ class Diagnostics implements DiagnosticsInterface
     }
 
     /**
-     * Third-party modules only. Core module names are noise; what matters when a
-     * checkout breaks is which extensions are in play.
+     * Third-party modules only.
+     *
+     * Core module names are noise; what matters when a checkout breaks is which extensions are in play.
      *
      * @return mixed[]
      */
@@ -471,12 +511,17 @@ class Diagnostics implements DiagnosticsInterface
     }
 
     /**
+     * Active payment methods.
+     *
      * @return mixed[]
      */
     private function paymentMethods(): array
     {
         $methods = [];
         foreach ($this->paymentConfig->getActiveMethods() as $code => $method) {
+            if ($code === \MageSentinel\Monitor\Model\Payment\TestMethod::CODE) {
+                continue;
+            }
             $methods[] = [
                 'code' => $code,
                 'title' => (string)$this->config->getValue("payment/{$code}/title"),
@@ -487,6 +532,8 @@ class Diagnostics implements DiagnosticsInterface
     }
 
     /**
+     * Active shipping methods.
+     *
      * @return mixed[]
      */
     private function shippingMethods(): array
@@ -503,8 +550,10 @@ class Diagnostics implements DiagnosticsInterface
     }
 
     /**
-     * Cron health. A store whose cron stopped will fail in ways that look random
-     * from the outside — stale prices, unsent emails, queues that never drain.
+     * Cron health.
+     *
+     * A store whose cron stopped will fail in ways that look random from the outside — stale prices, unsent
+     * emails, queues that never drain.
      *
      * @return mixed[]
      */
@@ -568,9 +617,10 @@ class Diagnostics implements DiagnosticsInterface
     }
 
     /**
-     * Indexer health. A stuck or invalidated indexer means stale search results,
-     * wrong prices, broken category navigation — all of which break checkout in
-     * ways that look like the store is up but the cart is broken.
+     * Indexer health.
+     *
+     * A stuck or invalidated indexer means stale search results, wrong prices, broken category navigation — all
+     * of which break checkout in ways that look like the store is up but the cart is broken.
      *
      * @return mixed[]
      */
@@ -612,6 +662,8 @@ class Diagnostics implements DiagnosticsInterface
     }
 
     /**
+     * Message queue depth.
+     *
      * @return mixed[]
      */
     private function queue(): array
@@ -633,8 +685,9 @@ class Diagnostics implements DiagnosticsInterface
     }
 
     /**
-     * Recent exception log lines. Truncated, and only the tail — this is a hint
-     * for correlation, not a log shipping service.
+     * Recent exception log lines.
+     *
+     * Truncated, and only the tail — this is a hint for correlation, not a log shipping service.
      *
      * @return mixed[]
      */
@@ -646,14 +699,15 @@ class Diagnostics implements DiagnosticsInterface
 
             foreach (['var/log/exception.log', 'var/log/system.log'] as $relative) {
                 $path = rtrim((string)$dir, '/') . '/' . $relative;
-                if (!is_readable($path)) {
+                if (!$this->quiet(fn() => $this->file->isReadable($path))) {
                     continue;
                 }
                 $lines = $this->tail($path, 20);
+                $stat = $this->file->stat($path);
                 $entries[] = [
                     'file' => $relative,
-                    'size_bytes' => filesize($path) ?: 0,
-                    'modified_at' => gmdate('c', (int)filemtime($path)),
+                    'size_bytes' => (int)($stat['size'] ?? 0),
+                    'modified_at' => gmdate('c', (int)($stat['mtime'] ?? 0)),
                     'tail' => array_map(
                         static function ($line) {
                             return substr($line, 0, 500);
@@ -696,7 +750,7 @@ class Diagnostics implements DiagnosticsInterface
             // reporting that as "unknown" would hide the card on exactly the
             // healthy stores whose zero is worth seeing. Missing is zero;
             // present-but-unreadable is genuinely unknown.
-            if (!is_dir($dir)) {
+            if (!$this->quiet(fn() => $this->file->isDirectory($dir))) {
                 return [
                     'window_hours' => 24,
                     'total' => 0,
@@ -706,25 +760,22 @@ class Diagnostics implements DiagnosticsInterface
                     'oldest_at' => null,
                 ];
             }
-            if (!is_readable($dir)) {
+            if (!$this->quiet(fn() => $this->file->isReadable($dir))) {
                 return null;
             }
 
             $cutoff = time() - 86400;
             $files = [];
-            $names = $this->quiet(fn() => scandir($dir));
-            if ($names === false) {
+            $paths = $this->quiet(fn() => $this->file->readDirectory($dir));
+            if ($paths === false) {
                 return null;
             }
-            foreach ($names as $name) {
-                if ($name === '.' || $name === '..') {
+            foreach ($paths as $path) {
+                if (!$this->quiet(fn() => $this->file->isFile($path))) {
                     continue;
                 }
-                $path = $dir . '/' . $name;
-                if (!is_file($path)) {
-                    continue;
-                }
-                $mtime = $this->quiet(fn() => filemtime($path));
+                $stat = $this->quiet(fn() => $this->file->stat($path));
+                $mtime = is_array($stat) ? ($stat['mtime'] ?? false) : false;
                 if ($mtime === false || $mtime < $cutoff) {
                     continue;
                 }
@@ -768,10 +819,20 @@ class Diagnostics implements DiagnosticsInterface
      * and third-party error handlers write neither. "unknown" is a real bucket
      * rather than a reason to drop the file: the count is the load-bearing
      * number, and a report we could not parse still happened.
+     *
+     * @param string $path
+     * @return string
      */
     private function crashReportType(string $path): string
     {
-        $head = (string)$this->quiet(fn() => file_get_contents($path, false, null, 0, 4096));
+        $head = (string)$this->quiet(function () use ($path) {
+            $handle = $this->file->fileOpen($path, 'r');
+            try {
+                return $this->file->fileRead($handle, 4096);
+            } finally {
+                $this->file->fileClose($handle);
+            }
+        });
         if ($head === '') {
             return 'unknown';
         }
@@ -839,14 +900,10 @@ class Diagnostics implements DiagnosticsInterface
                 $base .= ':' . $port;
             }
 
-            // ignore_errors so a 4xx/5xx still returns a body: an engine that
-            // answers with an error is reachable, and saying otherwise would
-            // point the merchant at the network instead of the cluster.
-            $context = stream_context_create([
-                'http' => ['timeout' => 2, 'ignore_errors' => true],
-            ]);
-
-            $health = $this->quiet(fn() => file_get_contents($base . '/_cluster/health', false, $context));
+            // A 4xx/5xx still returns a body: an engine that answers with an
+            // error is reachable, and saying otherwise would point the
+            // merchant at the network instead of the cluster.
+            $health = $this->httpGet($base . '/_cluster/health');
             if ($health === false) {
                 return $result;
             }
@@ -857,7 +914,7 @@ class Diagnostics implements DiagnosticsInterface
                 $result['status'] = (string)$decoded['status'];
             }
 
-            $root = $this->quiet(fn() => file_get_contents($base . '/', false, $context));
+            $root = $this->httpGet($base . '/');
             $rootDecoded = is_string($root) ? json_decode($root, true) : null;
             if (is_array($rootDecoded) && isset($rootDecoded['version']['number'])) {
                 $result['version'] = (string)$rootDecoded['version']['number'];
@@ -868,8 +925,9 @@ class Diagnostics implements DiagnosticsInterface
     }
 
     /**
-     * How the full-page cache is set up, and how well it works where that can
-     * honestly be measured.
+     * Full page cache type and state.
+     *
+     * How the full-page cache is set up, and how well it works where that can honestly be measured.
      *
      * The configuration is the reliable finding: a full-page cache writing to
      * the filesystem is one of the commonest hidden causes of a slow checkout,
@@ -912,8 +970,10 @@ class Diagnostics implements DiagnosticsInterface
     }
 
     /**
-     * Redis keyspace hits and misses for the page cache's own database, or
-     * null when the setup cannot answer the question.
+     * Full page cache hit rate, when Varnish or Fastly report it.
+     *
+     * Redis keyspace hits and misses for the page cache's own database, or null when the setup cannot answer the
+     * question.
      *
      * Magento exposes no full-page-cache hit rate. Under Varnish it needs
      * varnishstat, which PHP cannot reach; on the filesystem the counter does
@@ -925,6 +985,7 @@ class Diagnostics implements DiagnosticsInterface
      * must not render its absence as a zero: "we cannot measure this" and
      * "nothing is being cached" are opposite findings.
      *
+     * @param string $backend
      * @return mixed[]|null
      */
     private function pageCacheHitRate(string $backend)
@@ -967,6 +1028,8 @@ class Diagnostics implements DiagnosticsInterface
     }
 
     /**
+     * When static content was last deployed.
+     *
      * @return mixed[]
      */
     private function deployment(): array
@@ -994,31 +1057,61 @@ class Diagnostics implements DiagnosticsInterface
     }
 
     /**
+     * The last lines of a log file.
+     *
+     * @param string $path
+     * @param int $lines
      * @return string[]
      */
     private function tail(string $path, int $lines): array
     {
-        $handle = $this->quiet(fn() => fopen($path, 'r'));
+        $handle = $this->quiet(fn() => $this->file->fileOpen($path, 'r'));
         if ($handle === false) {
             return [];
         }
 
         $buffer = [];
-        while (($line = fgets($handle)) !== false) {
-            $buffer[] = rtrim($line, "\r\n");
-            if (count($buffer) > $lines) {
-                array_shift($buffer);
+        try {
+            while (!$this->file->endOfFile($handle)) {
+                $line = $this->quiet(fn() => $this->file->fileReadLine($handle, 65536, "\n"));
+                if ($line === false) {
+                    break;
+                }
+                $buffer[] = rtrim((string)$line, "\r\n");
+                if (count($buffer) > $lines) {
+                    array_shift($buffer);
+                }
             }
+        } finally {
+            $this->file->fileClose($handle);
         }
-        fclose($handle);
 
         return $buffer;
     }
 
     /**
-     * Diagnostics must never break the endpoint: a store with an unusual setup
-     * should still return everything else that worked.
+     * The body of a GET with a 2-second timeout; false when the host does not answer.
      *
+     * @param string $url
+     * @return string|false
+     */
+    private function httpGet(string $url)
+    {
+        return $this->quiet(function () use ($url) {
+            $curl = $this->curlFactory->create();
+            $curl->setTimeout(2);
+            $curl->get($url);
+            return $curl->getStatus() > 0 ? $curl->getBody() : false;
+        });
+    }
+
+    /**
+     * Run a probe, returning the fallback when it throws.
+     *
+     * Diagnostics must never break the endpoint: a store with an unusual setup should still return everything
+     * else that worked.
+     *
+     * @param callable $fn
      * @param mixed $fallback
      * @return mixed
      */
@@ -1032,8 +1125,10 @@ class Diagnostics implements DiagnosticsInterface
     }
 
     /**
-     * Runs a filesystem or network call that reports failure by returning false,
-     * without letting its PHP warning reach the error handler.
+     * Run a call with PHP warnings silenced; false when it throws.
+     *
+     * Runs a filesystem or network call that reports failure by returning false, without letting its PHP warning
+     * reach the error handler.
      *
      * @param callable $call
      * @return mixed

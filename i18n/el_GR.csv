@@ -237,7 +237,7 @@ Last run,Τελευταία εκτέλεση
 passed,πέρασε
 "passed, slow step","πέρασε, αργό βήμα"
 problem,πρόβλημα
-Scale %1; dashed line = median.,Κλίμακα %1· διακεκομμένη γραμμή = διάμεσος.
+Scale %1; dashed line = median, above the dotted line = slow.,Κλίμακα %1· διακεκομμένη γραμμή = διάμεσος, πάνω από τη στικτή = αργό.
 Health over 7 days,Υγεία σε 7 ημέρες
 worst result of each day,χειρότερο αποτέλεσμα κάθε ημέρας
 No check,Χωρίς έλεγχο
@@ -257,3 +257,34 @@ Last check-in %1,Τελευταίος έλεγχος %1
 "Dark","Σκούρο"
 "Free plan: connector inactive","Πλάνο Free: ο connector είναι ανενεργός"
 "MageSentinel still checks your checkout once a day, without test orders or store diagnostics. The module can stay installed. Choose a plan for checks every 30 minutes.","Το MageSentinel συνεχίζει να ελέγχει το checkout μία φορά τη μέρα, χωρίς δοκιμαστικές παραγγελίες και διαγνωστικά του καταστήματος. Το module μπορεί να μείνει εγκατεστημένο. Επιλέξτε πλάνο για ελέγχους κάθε 30 λεπτά."
+"Order emails sent","Αποστολή email παραγγελιών"
+"No orders needing an email in the last 24 hours.","Καμία παραγγελία που χρειάζεται email τις τελευταίες 24 ώρες."
+"%1 of %2 orders in the last 24 hours got no confirmation email. Check the mail setup and cron.","%1 από %2 παραγγελίες των τελευταίων 24 ωρών δεν πήραν email επιβεβαίωσης. Ελέγξτε τις ρυθμίσεις email και το cron."
+"%1 of %2 orders in the last 24 hours got no confirmation email.","%1 από %2 παραγγελίες των τελευταίων 24 ωρών δεν πήραν email επιβεβαίωσης."
+"All %1 orders in the last 24 hours got their email.","Και οι %1 παραγγελίες των τελευταίων 24 ωρών πήραν το email τους."
+"Redis reachable","Redis διαθέσιμο"
+"Redis is not used by this store.","Το κατάστημα δεν χρησιμοποιεί Redis."
+"Redis does not answer for: %1. Pages or sessions fail while it is down.","Το Redis δεν απαντά για: %1. Σελίδες ή sessions αποτυγχάνουν όσο είναι εκτός."
+"Answering for: %1.","Απαντά για: %1."
+"Search engine reachable","Μηχανή αναζήτησης διαθέσιμη"
+"No separate search engine is used.","Δεν χρησιμοποιείται ξεχωριστή μηχανή αναζήτησης."
+"%1 at %2:%3 does not answer. Category and search pages may show no products.","Το %1 στο %2:%3 δεν απαντά. Κατηγορίες και αναζήτηση μπορεί να εμφανίζονται χωρίς προϊόντα."
+"%1 answers at %2:%3.","Το %1 απαντά στο %2:%3."
+"No injected scripts","Χωρίς ενσωματωμένα κακόβουλα scripts"
+"Obfuscated script found, the way card skimmers hide: %1. Check it before the next order.","Βρέθηκε συγκαλυμμένο script, όπως κρύβονται οι card skimmers: %1. Ελέγξτε το πριν την επόμενη παραγγελία."
+"Checked %1 CMS blocks, pages and design fields with scripts.","Ελέγχθηκαν %1 CMS blocks, σελίδες και πεδία design με scripts."
+"No PHP files in media","Χωρίς αρχεία PHP στο media"
+"No media folder.","Δεν υπάρχει φάκελος media."
+"%1 PHP files in pub/media, where only uploads belong. Likely a web shell: %2.","%1 αρχεία PHP στο pub/media, όπου ανήκουν μόνο uploads. Πιθανό web shell: %2."
+"None found.","Δεν βρέθηκε κανένα."
+"Admin address not the default","Διεύθυνση admin όχι η προεπιλεγμένη"
+"The admin uses a custom URL.","Το admin χρησιμοποιεί δική του διεύθυνση."
+"The admin is at /%1, the first address bots try. Set a custom backend frontName in env.php.","Το admin βρίσκεται στο /%1, την πρώτη διεύθυνση που δοκιμάζουν τα bots. Ορίστε δικό σας backend frontName στο env.php."
+"The admin is not at a default address.","Το admin δεν βρίσκεται σε προεπιλεγμένη διεύθυνση."
+"Taking orders","Λήψη παραγγελιών"
+"Security","Ασφάλεια"
+"Platform","Πλατφόρμα"
+"of checks without a problem","των ελέγχων χωρίς πρόβλημα"
+"Problem","Πρόβλημα"
+"Each square is one hour; hover a day for what went wrong.","Κάθε τετράγωνο είναι μία ώρα· περάστε το ποντίκι πάνω από μια μέρα για να δείτε τι χάλασε."
+slow,αργό

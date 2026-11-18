@@ -22,6 +22,7 @@ class Access
     private const XML_TOKEN = 'magesentinel/monitor/token';
     private const XML_ALLOW_CANCEL = 'magesentinel/monitor/allow_cancel';
     private const XML_ALLOW_CAPTCHA_SKIP = 'magesentinel/monitor/allow_captcha_skip';
+    private const XML_ALLOW_TEST_GATEWAY = 'magesentinel/monitor/allow_test_gateway';
     private const HEADER = 'X-MageSentinel-Token';
 
     /** @var ScopeConfigInterface */
@@ -32,7 +33,16 @@ class Access
     private $request;
     /** @var bool|null */
     private $trustedCheck;
+    /** @var bool|null */
+    private $testGatewayRequest;
 
+    /**
+     * Constructor.
+     *
+     * @param ScopeConfigInterface $config
+     * @param EncryptorInterface $encryptor
+     * @param Http $request
+     */
     public function __construct(
         ScopeConfigInterface $config,
         EncryptorInterface $encryptor,
@@ -44,7 +54,10 @@ class Access
     }
 
     /**
+     * Refuse a request without a valid connector token.
+     *
      * @throws AuthorizationException
+     * @return void
      */
     public function assertAllowed(): void
     {
@@ -57,10 +70,13 @@ class Access
     }
 
     /**
-     * Whether this request is one of MageSentinel's own checks that the
-     * merchant chose to exempt from the store's CAPTCHA: the connector on, the
-     * exemption on (a third switch, off by default), and the store's own token
-     * in the header. Never throws — every other request is an ordinary visitor.
+     * Whether the request is one of MageSentinel's checks.
+     *
+     * Whether this request is one of MageSentinel's own checks that the merchant chose to exempt from the
+     * store's CAPTCHA: the connector on, the exemption on (a third switch, off by default), and the store's own
+     * token in the header. Never throws — every other request is an ordinary visitor.
+     *
+     * @return bool
      */
     public function isTrustedCheck(): bool
     {
@@ -72,6 +88,51 @@ class Access
         return $this->trustedCheck;
     }
 
+    /**
+     * Whether this request may see the hidden test payment method.
+     *
+     * Connector on, the owner's opt-in on, and the store's own token in the header. Never throws.
+     *
+     * @return bool
+     */
+    public function isTestGatewayRequest(): bool
+    {
+        if ($this->testGatewayRequest === null) {
+            $this->testGatewayRequest = $this->isTestGatewayEnabled() && $this->hasValidToken();
+        }
+        return $this->testGatewayRequest;
+    }
+
+    /**
+     * Whether the owner turned the hidden test payment method on (and the connector).
+     *
+     * @return bool
+     */
+    public function isTestGatewayEnabled(): bool
+    {
+        return $this->config->isSetFlag(self::XML_ENABLED) && $this->config->isSetFlag(self::XML_ALLOW_TEST_GATEWAY);
+    }
+
+    /**
+     * Refuse when the owner has not turned the hidden test payment method on.
+     *
+     * @throws AuthorizationException
+     * @return void
+     */
+    public function assertTestGatewayAllowed(): void
+    {
+        if (!$this->isTestGatewayEnabled()) {
+            throw new AuthorizationException(
+                new Phrase('MageSentinel test orders are not enabled on this store.')
+            );
+        }
+    }
+
+    /**
+     * Whether the request carries the connector token.
+     *
+     * @return bool
+     */
     private function hasValidToken(): bool
     {
         $expected = (string)$this->config->getValue(self::XML_TOKEN);
@@ -95,6 +156,7 @@ class Access
      * and the one who wants self-cleaning test orders should have to say so.
      *
      * @throws AuthorizationException
+     * @return void
      */
     public function assertCancelAllowed(): void
     {
