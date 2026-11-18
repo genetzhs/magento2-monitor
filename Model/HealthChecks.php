@@ -46,7 +46,7 @@ class HealthChecks
      */
     private const SKIMMER_PATTERNS = [
         'eval + atob loader' => '/eval\s*\(\s*atob\s*\(/i',
-        'eval + fromCharCode loader' => '/eval\s*\(\s*String\.from[C]harCode/i',
+        'eval + char-code loader' => '/eval\s*\(\s*String\.from[C]harCode/i',
         'write + unescape loader' => '/document\.write\s*\(\s*unescape\s*\(/i',
         'Function + atob loader' => '/new\s+Function\s*\(\s*atob\s*\(/i',
         'WebSocket exfiltration' => '/new\s+WebSocket\s*\(\s*[\'"]wss?:/i',
